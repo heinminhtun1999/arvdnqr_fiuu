@@ -48,7 +48,7 @@ app.post("/get-qr", async (req, res) => {
         referenceId: createOrderID(),
         storeId: "17001",
         terminalId: "17001001",
-        version: "v3"
+        version: "v2"
     }
 
     let hashString = "";
