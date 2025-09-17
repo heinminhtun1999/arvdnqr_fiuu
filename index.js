@@ -81,6 +81,11 @@ app.post("/get-qr", async (req, res) => {
 
 });
 
+app.get("/return", (req, res) => {
+    console.log("query", req.query);
+    res.send("Return URL");
+});
+
 app.get("/notification", (req, res) => {
     console.log("query", req.query);
     res.send("Notification received");
