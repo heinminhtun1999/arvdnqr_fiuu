@@ -75,7 +75,7 @@ app.post("/get-qr", async (req, res) => {
         res.redirect(`/?qr=${response.data.imageUrl}`)
 
     } catch (e) {
-        console.log(e.response);
+        console.log("ERROR", e.response.data);
         res.send("Error");
     }
 
