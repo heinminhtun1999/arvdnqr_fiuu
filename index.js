@@ -75,14 +75,14 @@ app.post("/get-qr", async (req, res) => {
         res.redirect(`/?qr=${response.data.imageUrl}`)
 
     } catch (e) {
-        console.log(e.response.data);
+        console.log(e.response);
         res.send("Error");
     }
 
 });
 
 app.get("/return", (req, res) => {
-    console.log("query", req.query);
+    console.log("return query", req.query);
     res.send("Return URL");
 });
 
@@ -99,3 +99,4 @@ app.post("/notification", (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
