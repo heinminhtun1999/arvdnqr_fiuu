@@ -41,14 +41,14 @@ app.post("/get-qr", async (req, res) => {
     const body = {
         amount: 0.10.toFixed(2),
         applicationCode: process.env.appcode,
-        channelId: 24,
+        channelId: "24",
         currencyCode: "MYR",
         description: "TEST",
         hashType: "hmac-sha256",
         referenceId: createOrderID(),
         storeId: "17001",
         terminalId: "17001001",
-        version: "v2"
+        version: "v3"
     }
 
     let hashString = "";
@@ -99,4 +99,8 @@ app.post("/notification", (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+
 
