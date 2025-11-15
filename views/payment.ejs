@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scan</title>
+    <link rel="stylesheet" href="/stylesheets/build.css" />
+    <script
+      type="text/javascript"
+      src="/javascripts/davidshimjs-qrcodejs-04f46c6/qrcode.js"
+    ></script>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="w-full h-full flex flex-col justify-center items-center p-10">
+      <h1 class="text-3xl font-bold mb-5">Scan to Pay</h1>
+      <div id="qrcode"></div>
+      <div>QR Expires in: <span id="timer">03:00</span></div>
+      <form action="/cancel" method="POST" class="mt-5">
+        <input type="hidden" name="orderData" value="<%= JSON.stringify(data) %>" />
+        <button
+          type="submit"
+          class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-400 cursor-pointer"
+        >
+          Cancel Payment
+        </button>
+    </div>
+  </body>
+  <!-- Scripts -->
+  <script type="text/javascript">
+    if ("<%= data %>") {
+    
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+      text: "<%= data.authorizationCode %>",
+      width: 256,
+      height: 256,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.L,
+    });
+
+    const timerElement = document.getElementById("timer");
+
+    let timeLeft = 180;
+    let isExpired = false;
+    const interval = setInterval(() => {
+      if (timeLeft <= 0 || isExpired) {
+        clearInterval(interval);
+        timerElement.textContent = "00:00";
+        alert(`
+        Payment has expired. You will be redirected to the homepage. 
+        If you have already made the payment, please contact support with your reference ID: <%= data.referenceId %>
+        `);
+        
+        window.location.href = "/";
+      }
+
+      const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+      const seconds = String(timeLeft % 60).padStart(2, "0");
+      timerElement.textContent = `${minutes}:${seconds}`;
+      timeLeft--;
+    }, 1000);
+    }
+
+    // Socket.io Client Setup
+    
+    const socket = io();
+
+    
+    socket.on('connect', () => {
+      console.log(socket.connected, "id:", socket.id);
+    })
+
+    socket.on('paymentStatus', (msg) => {
+      if (msg.status == false && msg.message == "Payment expired" ) {
+        isExpired = true;
+      } else if (msg.status == false && msg.message == "Payment failed") {
+        alert("Payment failed! Please try again.");
+        window.location.href = "/";
+      }
+      else if (msg.status == true && msg.message == "Payment successful") {
+        alert("Payment successful! You will be redirected to the homepage.");
+        window.location.href = "/status?referenceId=<%= data.referenceId %>";
+      }
+    });
+
+
+  </script>
+</html>

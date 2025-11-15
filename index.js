@@ -2,101 +2,278 @@ const express = require("express");
 const crypto = require("crypto");
 const axios = require("axios");
 const dotenv = require("dotenv");
-const qs = require("qs")
+const qs = require("qs");
+const path = require("path");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
 dotenv.config();
 
-const createOrderID = () => {
-    let text = "ARtest-";
-    const timestamp = Date.now();
-    text += timestamp;
-    return text;
-}
+/*
+================================
+Initialization and Configuration
+================================
+*/
 
-const generateHash = (data) => {
-    // iPay88: Signature = HMAC_SHA512(key, MerchantCode + RefNo + Amount(without ".") + Currency)
-    // Do NOT prepend the key into the data string; key goes only into createHmac.
-    return crypto
-        .createHmac("sha256", process.env.secretkey)
-        .update(data, "utf8")
-        .digest("hex");
-}
+const activeOrders = [];
 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
 
+const httpServer = createServer(app);
+const io = new Server(httpServer);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
-    console.log(req.query.qr)
-    res.render("index", { qr: req.query.qr });
+    res.render("index");
 });
 
-app.post("/get-qr", async (req, res) => {
-    let url = "https://opa.merchant.razer.com/RMS/API/MOLOPA/precreate.php";
+/*
+=================
+Checkout Endpoint
+=================
+*/
+
+app.post("/checkout", async (req, res) => {
+
+    const { cartData } = req.body;
+
+    const data = JSON.parse(cartData);
+
+
+    // let url = "https://opa.merchant.razer.com/RMS/API/MOLOPA/precreate.php";
+    let url = "https://api.arvending.com.my/arvdnqrapi/precreate"; // ARgo URL
+
+    const referenceId = createOrderID();
 
     const body = {
-        amount: 0.10.toFixed(2),
+        amount: data.total.toFixed(2),
         applicationCode: process.env.appcode,
         channelId: "24",
         currencyCode: "MYR",
         description: "TEST",
         hashType: "hmac-sha256",
-        referenceId: createOrderID(),
+        referenceId: referenceId,
         storeId: "17001",
         terminalId: "17001001",
         version: "v3"
     }
 
+    const order = {
+        referenceId: referenceId,
+        amount: data.total.toFixed(2),
+        items: data.cartItems.map(item => ({ ...item, deliveryStatus: [] })),
+        timestamp: Date.now(),
+        active: true,
+        paymentCompleted: false
+    }
+    console.log(order)
+    activeOrders.push(order);
+
     let hashString = "";
     for (const key in body) {
-
         hashString += body[key];
     }
-    console.log(hashString)
 
     const hash = generateHash(hashString);
 
     body["signature"] = hash;
-    console.log(body)
-    console.log(typeof body['amount'])
-
     try {
-        const response = await axios.post(url, qs.stringify(body), {
+        const response = await axios.post(url, body, {
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             }
         });
 
-        console.log(response.data);
-        res.redirect(`/?qr=${response.data.imageUrl}`)
+
+        const data = response.data;
+        if (data.success && data.response.statusCode === "00") {
+
+            // Start timeout check (3 minutes)
+            checkTimeout(180, referenceId);
+            return res.render("payment", { data: data.response });
+        }
 
     } catch (e) {
         console.log("ERROR", e.response.data);
         res.send("Error");
     }
-
 });
 
-app.get("/return", (req, res) => {
-    console.log("return query", req.query);
-    res.send("Return URL");
+/*
+============
+Cancel Order
+============
+*/
+
+app.post("/cancel", async (req, res) => {
+    const { orderData } = req.body;
+    const order = JSON.parse(orderData);
+
+    const existingOrder = activeOrders.find(o => o.referenceId === order.referenceId);
+    const referenceId = order.referenceId;
+
+    const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
+
+    const body = {
+        version: "v3",
+        referenceId: referenceId,
+        paymentReferenceId: referenceId,
+        hashType: "hmac-sha256",
+    }
+
+    let hashString = "";
+    for (const key in body) {
+        hashString += body[key];
+    }
+
+    const hash = generateHash(hashString);
+
+    body["signature"] = hash;
+
+    try {
+
+        const response = await axios.post(url, body, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        console.log("CANCEL RESPONSE", response.data);
+
+        // if (response.data.success && response.data.response.statusCode === "00") {
+        //     const existingOrderIndex = activeOrders.fin
+        // }
+
+    } catch (e) {
+        console.log("ERROR", e);
+    }
+
+
+
+    return res.redirect("/");
 });
 
-app.get("/notification", (req, res) => {
-    console.log("query", req.query);
-    res.send("Notification received");
-});
+
+/*
+=====================
+Notification Endpoint
+=====================
+*/
 
 app.post("/notification", (req, res) => {
-    console.log("body", req.body);
-    res.send("Notification received");
+
+    const order = activeOrders.find(o => o.referenceId === req.body.referenceId);
+
+    if (!order) {
+        console.log("Order not found for notification:", req.body.referenceId);
+        return res.status(404).json({
+            success: false,
+            message: "Order not found"
+        });
+    }
+
+    if (!order.active) {
+        console.log("Order is expired", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "Order is expired"
+        });
+    }
+
+    const data = req.body;
+
+    if (data.statusCode == "99") {
+        console.log(`Payment for order ${data.referenceId} failed.`);
+        order.paymentCompleted = false;
+        io.emit("paymentStatus", {
+            status: false,
+            message: "Payment failed"
+        });
+    } else if (data.statusCode == "00") {
+        console.log(`Payment for order ${data.referenceId} successful.`);
+        order.paymentCompleted = true;
+        io.emit("paymentStatus", {
+            status: true,
+            message: "Payment successful"
+        });
+    }
+
+    return res.send({ success: true, message: "RECEIVEDOK" });
 });
 
-app.listen(PORT, () => {
+/*
+=====================
+Delivery Status
+=====================
+*/
+
+app.get("/status", (req, res) => {
+    const referenceId = req.query;
+    const order = activeOrders.find(o => o.referenceId === referenceId);
+    res.render("status", order);
+});
+
+
+/*================
+Start the Server
+================
+*/
+
+httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
+
+/* 
+================
+Helper Functions
+================ 
+*/
+
+function createOrderID() {
+    let text = "ARV001-";
+    const timestamp = Date.now();
+    text += timestamp;
+    return text;
+}
+
+function generateHash(data) {
+    // iPay88: Signature = HMAC_SHA512(key, MerchantCode + RefNo + Amount(without ".") + Currency)
+    // Do NOT prepend the key into the data string; key goes only into createHmac.
+    return crypto
+        .createHmac("sha256", process.env.key)
+        .update(data, "utf8")
+        .digest("hex");
+}
+
+function checkTimeout(duration, referenceId) {
+    const order = activeOrders.find(o => o.referenceId === referenceId);
+
+    let timePassed = 0;
+    const interval = setInterval(() => {
+
+        if (timePassed >= duration) {
+            if (order && !order.paymentCompleted) {
+                order.active = false;
+                io.emit("paymentStatus", {
+                    status: false,
+                    message: "Payment expired"
+                });
+                console.log(`Order ${referenceId} has timed out. Cancelling...`);
+            }
+            clearInterval(interval);
+        }
+        timePassed++;
+    }, 1000)
+}
+
+
+function deliverProduct() {
+
+}
