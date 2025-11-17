@@ -15,9 +15,6 @@ Initialization and Configuration
 ================================
 */
 
-
-const activeOrders = [];
-
 const PORT = process.env.PORT || 3000;
 
 const app = express();
@@ -207,7 +204,7 @@ app.post("/notification", (req, res) => {
     //     });
     // }
 
-    const order = activeOrders.find(o => o.referenceId === req.body.referenceId);
+    const order = getOrderFromJson(req.body.referenceId);
 
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
