@@ -224,7 +224,7 @@ app.get("/status", (req, res) => {
     const referenceId = req.query.referenceId;
     const order = activeOrders.find(o => o.referenceId === referenceId);
     console.log("Order status requested:", referenceId, order);
-    res.render("status", order);
+    res.render("status", { order });
 });
 
 
