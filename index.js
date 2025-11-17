@@ -56,11 +56,17 @@ Orders Json
 const orderJsonFilePath = path.join(__dirname, "/public/orders.json");
 
 if (!fs.existsSync(orderJsonFilePath)) {
-    const data = fs.readFileSync(orderJsonFilePath);
-    console.log("Initial data:", JSON.parse(data));
-    fs.unlinkSync(orderJsonFilePath);
     fs.writeFileSync(orderJsonFilePath, JSON.stringify([]));
 }
+
+(async () => {
+    const data = fs.readFileSync(orderJsonFilePath);
+    const orders = JSON.parse(data);
+    console.log("Initial data:", orders);
+    fs.unlinkSync(orderJsonFilePath);
+})()
+
+
 
 /*
 =================
