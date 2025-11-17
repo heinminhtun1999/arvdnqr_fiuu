@@ -253,7 +253,7 @@ Delivery Status
 
 app.get("/status", (req, res) => {
     const referenceId = req.query.referenceId;
-    const order = activeOrders.find(o => o.referenceId === referenceId);
+    const order = getOrderFromJson(referenceId);
     console.log("Order status requested:", referenceId, order);
     res.render("status", { order });
 });
@@ -303,7 +303,7 @@ function generateHash(data) {
 function checkTimeout(duration, referenceId) {
 
     setTimeout(() => {
-        const order = activeOrders.find(o => o.referenceId === referenceId);
+        const order = getOrderFromJson(referenceId);
         if (order && !order.paymentCompleted) {
             order.active = false;
             io.to(`order_${referenceId}`).emit("paymentStatus", {

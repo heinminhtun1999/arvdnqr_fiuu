@@ -29,42 +29,42 @@
   <!-- Scripts -->
   <script type="text/javascript">
     if ("<%= data %>") {
-    
-        var qrcode = new QRCode(document.getElementById("qrcode"), {
-      text: "<%= data.authorizationCode %>",
-      width: 256,
-      height: 256,
-      colorDark: "#000000",
-      colorLight: "#ffffff",
-      correctLevel: QRCode.CorrectLevel.L,
-    });
+      
+      // Generate QR Code
+      var qrcode = new QRCode(document.getElementById("qrcode"), {
+          text: "<%= data.authorizationCode %>",
+          width: 256,
+          height: 256,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.L,
+      });
 
-    const timerElement = document.getElementById("timer");
+      // Payment Expiry Timer for 3 minutes
+      const timerElement = document.getElementById("timer");
+      let timeLeft = 180;
+      let isExpired = false;
+      const interval = setInterval(() => {
+        if (timeLeft <= 0 || isExpired) {
+          clearInterval(interval);
+          timerElement.textContent = "00:00";
+          alert(`
+          Payment has expired. You will be redirected to the homepage. 
+          If you have already made the payment, please contact support with your reference ID: <%= data.referenceId %>
+          `);
+          
+          window.location.href = "/";
+        }
 
-    let timeLeft = 180;
-    let isExpired = false;
-    const interval = setInterval(() => {
-      if (timeLeft <= 0 || isExpired) {
-        clearInterval(interval);
-        timerElement.textContent = "00:00";
-        alert(`
-        Payment has expired. You will be redirected to the homepage. 
-        If you have already made the payment, please contact support with your reference ID: <%= data.referenceId %>
-        `);
-        
-        window.location.href = "/";
-      }
-
-      const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
-      const seconds = String(timeLeft % 60).padStart(2, "0");
-      timerElement.textContent = `${minutes}:${seconds}`;
-      timeLeft--;
-    }, 1000);
+        const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+        const seconds = String(timeLeft % 60).padStart(2, "0");
+        timerElement.textContent = `${minutes}:${seconds}`;
+        timeLeft--;
+      }, 1000);
     }
 
     
     // Socket.io Client Setup
-    
     const socket = io();
 
     // Handle connection
