@@ -167,6 +167,7 @@ Notification Endpoint
 */
 
 app.post("/notification", (req, res) => {
+    console.log("Notification received:", req.body);
 
     const order = activeOrders.find(o => o.referenceId === req.body.referenceId);
 
