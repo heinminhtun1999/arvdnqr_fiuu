@@ -68,12 +68,16 @@
     
     const socket = io();
 
-    
+    // Handle connection
     socket.on('connect', () => {
       console.log(socket.connected, "id:", socket.id);
+
+    // Join room for this order
+    socket.emit("joinOrderRoom", "<%= data.referenceId %>");
     })
 
-    socket.on("<%= 'paymentStatus' + data.referenceId %>", (msg) => {
+    // Listen for payment status updates
+    socket.on("paymentStatus", (msg) => {
       if (msg.status == false && msg.message == "Payment expired" ) {
         isExpired = true;
       } else if (msg.status == false && msg.message == "Payment failed") {

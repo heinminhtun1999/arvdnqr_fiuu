@@ -15,6 +15,7 @@ Initialization and Configuration
 ================================
 */
 
+
 const activeOrders = [];
 
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,21 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
     res.render("index");
 });
+
+// --- Socket.io connection handler ---
+io.on("connection", (socket) => {
+    console.log("Client connected:", socket.id);
+
+    socket.on("joinOrderRoom", (referenceId) => {
+        socket.join(`order_${referenceId}`);
+        console.log(`Socket ${socket.id} joined room order_${referenceId}`);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Client disconnected:", socket.id);
+    });
+});
+
 
 /*
 =================
@@ -198,18 +214,18 @@ app.post("/notification", (req, res) => {
     if (data.statusCode == "99") {
         console.log(`Payment for order ${data.referenceId} failed.`);
         order.paymentCompleted = false;
-        io.emit(`paymentStatus${data.referenceId}`, {
+        io.to(`order_${referenceId}`).emit("paymentStatus", {
             status: false,
             message: "Payment failed",
-            referenceId: data.referenceId
+            referenceId
         });
     } else if (data.statusCode == "00") {
         console.log(`Payment for order ${data.referenceId} successful.`);
         order.paymentCompleted = true;
-        io.emit(`paymentStatus${data.referenceId}`, {
+        io.to(`order_${referenceId}`).emit("paymentStatus", {
             status: true,
             message: "Payment successful",
-            referenceId: data.referenceId
+            referenceId
         });
     }
 
@@ -263,24 +279,18 @@ function generateHash(data) {
 }
 
 function checkTimeout(duration, referenceId) {
-    const order = activeOrders.find(o => o.referenceId === referenceId);
-
-    let timePassed = 0;
-    const interval = setInterval(() => {
-
-        if (timePassed >= duration) {
-            if (order && !order.paymentCompleted) {
-                order.active = false;
-                io.emit("paymentStatus", {
-                    status: false,
-                    message: "Payment expired"
-                });
-                console.log(`Order ${referenceId} has timed out. Cancelling...`);
-            }
-            clearInterval(interval);
+    setTimeout(() => {
+        const order = activeOrders.find(o => o.referenceId === referenceId);
+        if (order && !order.paymentCompleted) {
+            order.active = false;
+            io.to(`order_${referenceId}`).emit("paymentStatus", {
+                status: false,
+                message: "Payment expired",
+                referenceId
+            });
+            console.log(`Order ${referenceId} has timed out. Cancelling...`);
         }
-        timePassed++;
-    }, 1000)
+    }, duration * 1000);
 }
 
 
