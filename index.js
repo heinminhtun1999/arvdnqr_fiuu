@@ -64,17 +64,16 @@ Checkout Endpoint
 */
 
 app.post("/checkout", async (req, res) => {
-
     const { cartData } = req.body;
 
     const data = JSON.parse(cartData);
-
 
     // let url = "https://opa.merchant.razer.com/RMS/API/MOLOPA/precreate.php";
     let url = "https://api.arvending.com.my/arvdnqrapi/precreate"; // ARgo URL
 
     const referenceId = createOrderID();
 
+    // Create request body for ARgo QR
     const body = {
         amount: data.total.toFixed(2),
         applicationCode: process.env.appcode,
@@ -101,8 +100,10 @@ app.post("/checkout", async (req, res) => {
     // Saving order to orders.json
     addOrderToJson(order);
 
+    // Create signature for request body for ARgo QR
     const hash = generateHash(body);
     body["signature"] = hash;
+    console.log("Checkout request received 2:", data, "Reference ID:", referenceId);
 
     try {
         const response = await axios.post(url, body, {
@@ -121,6 +122,8 @@ app.post("/checkout", async (req, res) => {
         } else {
             res.send("Error creating order");
         }
+
+        // Need to implement signature validation for response here
 
     } catch (e) {
         console.log("ERROR", e.response.data);
@@ -177,13 +180,14 @@ app.post("/cancel", async (req, res) => {
             console.log("Failed to cancel order:", referenceId);
         }
 
+        // Need to implement signature validation for response here
+
     } catch (e) {
         console.log("ERROR", e);
     }
 
     return res.redirect("/");
 });
-
 
 /*
 =====================
@@ -258,7 +262,6 @@ app.get("/status", (req, res) => {
     res.render("status", { order });
 });
 
-
 /*================
 Start the Server
 ================
@@ -267,7 +270,6 @@ Start the Server
 httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
 
 /* 
 ================
@@ -299,7 +301,6 @@ function generateHash(data) {
         .digest("hex");
 }
 
-
 function checkTimeout(duration, referenceId) {
 
     setTimeout(() => {
@@ -324,7 +325,6 @@ function addOrderToJson(order) {
     fs.writeFileSync(orderJsonFilePath, JSON.stringify(orders, null, 2));
 }
 
-
 // Get single order from orders.json
 function getOrderFromJson(referenceId) {
     const ordersData = fs.readFileSync(orderJsonFilePath);
@@ -348,6 +348,7 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
     }
 }
 
-function deliverProduct() {
+function deliverProducts(referenceId) {
+    const order = getOrderFromJson(referenceId);
 
 }
