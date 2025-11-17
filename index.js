@@ -210,7 +210,7 @@ app.post("/notification", (req, res) => {
     }
 
     const data = req.body;
-
+    const referenceId = data.referenceId;
     if (data.statusCode == "99") {
         console.log(`Payment for order ${data.referenceId} failed.`);
         order.paymentCompleted = false;
