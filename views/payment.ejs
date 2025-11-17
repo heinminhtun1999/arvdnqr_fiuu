@@ -74,11 +74,11 @@
     socket.on('paymentStatus', (msg) => {
       if (msg.status == false && msg.message == "Payment expired" ) {
         isExpired = true;
-      } else if (msg.status == false && msg.message == "Payment failed") {
+      } else if (msg.status == false && msg.message == "Payment failed" && msg.referenceId == "<%= data.referenceId %>") {
         alert("Payment failed! Please try again.");
         window.location.href = "/";
       }
-      else if (msg.status == true && msg.message == "Payment successful") {
+      else if (msg.status == true && msg.message == "Payment successful" && msg.referenceId == "<%= data.referenceId %>") {
         alert("Payment successful! You will be redirected to the homepage.");
         window.location.href = "/status?referenceId=<%= data.referenceId %>";
       }
