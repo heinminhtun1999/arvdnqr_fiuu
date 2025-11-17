@@ -2,10 +2,10 @@ const express = require("express");
 const crypto = require("crypto");
 const axios = require("axios");
 const dotenv = require("dotenv");
-const qs = require("qs");
 const path = require("path");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const fs = require("fs");
 
 dotenv.config();
 
@@ -48,6 +48,17 @@ io.on("connection", (socket) => {
     });
 });
 
+/*
+===========
+Orders Json
+===========
+*/
+
+const orderJsonFilePath = path.join(__dirname, "/public/orders.json");
+
+if (!fs.existsSync(orderJsonFilePath)) {
+    fs.writeFileSync(orderJsonFilePath, JSON.stringify([]));
+}
 
 /*
 =================
@@ -80,6 +91,7 @@ app.post("/checkout", async (req, res) => {
         version: "v3"
     }
 
+    // Create order object and add to activeOrders
     const order = {
         referenceId: referenceId,
         amount: data.total.toFixed(2),
@@ -88,17 +100,13 @@ app.post("/checkout", async (req, res) => {
         active: true,
         paymentCompleted: false
     }
-    console.log(order)
-    activeOrders.push(order);
 
-    let hashString = "";
-    for (const key in body) {
-        hashString += body[key];
-    }
+    // Saving order to orders.json
+    addOrderToJson(order);
 
-    const hash = generateHash(hashString);
-
+    const hash = generateHash(body);
     body["signature"] = hash;
+
     try {
         const response = await axios.post(url, body, {
             headers: {
@@ -113,6 +121,8 @@ app.post("/checkout", async (req, res) => {
             // Start timeout check (3 minutes)
             checkTimeout(180, referenceId);
             return res.render("payment", { data: data.response });
+        } else {
+            res.send("Error creating order");
         }
 
     } catch (e) {
@@ -131,7 +141,7 @@ app.post("/cancel", async (req, res) => {
     const { orderData } = req.body;
     const order = JSON.parse(orderData);
 
-    const existingOrder = activeOrders.find(o => o.referenceId === order.referenceId);
+    const existingOrder = getOrderFromJson(order.referenceId);
 
     if (existingOrder.paymentCompleted) {
         console.log("Order already paid, cannot cancel:", order.referenceId);
@@ -149,13 +159,7 @@ app.post("/cancel", async (req, res) => {
         hashType: "hmac-sha256",
     }
 
-    let hashString = "";
-    for (const key in body) {
-        hashString += body[key];
-    }
-
-    const hash = generateHash(hashString);
-
+    const hash = generateHash(body);
     body["signature"] = hash;
 
     try {
@@ -168,15 +172,17 @@ app.post("/cancel", async (req, res) => {
 
         console.log("CANCEL RESPONSE", response.data);
 
-        // if (response.data.success && response.data.response.statusCode === "00") {
-        //     const existingOrderIndex = activeOrders.fin
-        // }
+        if (response.data.success && response.data.response.statusCode === "00") {
+            // Update order to inactive
+            updateOrderInJson(referenceId, "active", false); //need to implement retry mechanism here
+            console.log("Order cancelled successfully:", referenceId);
+        } else {
+            console.log("Failed to cancel order:", referenceId);
+        }
 
     } catch (e) {
         console.log("ERROR", e);
     }
-
-
 
     return res.redirect("/");
 });
@@ -190,6 +196,15 @@ Notification Endpoint
 
 app.post("/notification", (req, res) => {
     console.log("Notification received:", req.body);
+
+    const hash = generateHash(req.body);
+    if (hash !== req.body.signature) {
+        console.log("Invalid signature for notification:", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "(40103) Invalid signature"
+        });
+    }
 
     const order = activeOrders.find(o => o.referenceId === req.body.referenceId);
 
@@ -213,7 +228,7 @@ app.post("/notification", (req, res) => {
     const referenceId = data.referenceId;
     if (data.statusCode == "99") {
         console.log(`Payment for order ${data.referenceId} failed.`);
-        order.paymentCompleted = false;
+        updateOrderInJson(referenceId, "paymentCompleted", false);
         io.to(`order_${referenceId}`).emit("paymentStatus", {
             status: false,
             message: "Payment failed",
@@ -221,7 +236,7 @@ app.post("/notification", (req, res) => {
         });
     } else if (data.statusCode == "00") {
         console.log(`Payment for order ${data.referenceId} successful.`);
-        order.paymentCompleted = true;
+        updateOrderInJson(referenceId, "paymentCompleted", true);
         io.to(`order_${referenceId}`).emit("paymentStatus", {
             status: true,
             message: "Payment successful",
@@ -258,27 +273,37 @@ httpServer.listen(PORT, () => {
 
 /* 
 ================
-Helper Functions
+Utility Functions
 ================ 
 */
 
 function createOrderID() {
     let text = "ARV001-";
+    const randomNumber = Math.floor(Math.random() * 1000);
     const timestamp = Date.now();
-    text += timestamp;
+    text += timestamp + randomNumber;
     return text;
 }
 
+// Generate HMAC SHA256 hash
 function generateHash(data) {
     // iPay88: Signature = HMAC_SHA512(key, MerchantCode + RefNo + Amount(without ".") + Currency)
     // Do NOT prepend the key into the data string; key goes only into createHmac.
+
+    let hashString = "";
+    for (const key in data) {
+        hashString += data[key];
+    }
+
     return crypto
         .createHmac("sha256", process.env.key)
-        .update(data, "utf8")
+        .update(hashString, "utf8")
         .digest("hex");
 }
 
+
 function checkTimeout(duration, referenceId) {
+
     setTimeout(() => {
         const order = activeOrders.find(o => o.referenceId === referenceId);
         if (order && !order.paymentCompleted) {
@@ -293,6 +318,37 @@ function checkTimeout(duration, referenceId) {
     }, duration * 1000);
 }
 
+// Adding order to orders.json
+function addOrderToJson(order) {
+    const ordersData = fs.readFileSync(orderJsonFilePath);
+    const orders = JSON.parse(ordersData);
+    orders.push(order);
+    fs.writeFileSync(orderJsonFilePath, JSON.stringify(orders, null, 2));
+}
+
+
+// Get single order from orders.json
+function getOrderFromJson(referenceId) {
+    const ordersData = fs.readFileSync(orderJsonFilePath);
+    const orders = JSON.parse(ordersData);
+    return orders.find(o => o.referenceId === referenceId);
+}
+
+// Update order in orders.json
+function updateOrderInJson(referenceId, updateField, updateValue) {
+    const orderData = fs.readFileSync(orderJsonFilePath);
+    const orders = JSON.parse(orderData);
+    const orderIndex = orders.findIndex(o => o.referenceId === referenceId);
+
+    if (orderIndex !== -1) {
+        orders[orderIndex][updateField] = updateValue;
+        fs.writeFileSync(orderJsonFilePath, JSON.stringify(orders, null, 2));
+        return orders[orderIndex];
+    } else {
+        console.log("Order not found for update:", referenceId);
+        return null;
+    }
+}
 
 function deliverProduct() {
 
