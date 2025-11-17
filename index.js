@@ -116,6 +116,12 @@ app.post("/cancel", async (req, res) => {
     const order = JSON.parse(orderData);
 
     const existingOrder = activeOrders.find(o => o.referenceId === order.referenceId);
+
+    if (existingOrder.paymentCompleted) {
+        console.log("Order already paid, cannot cancel:", order.referenceId);
+        return res.send("Order already paid, cannot cancel.");
+    }
+
     const referenceId = order.referenceId;
 
     const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
@@ -215,8 +221,9 @@ Delivery Status
 */
 
 app.get("/status", (req, res) => {
-    const referenceId = req.query;
+    const referenceId = req.query.referenceId;
     const order = activeOrders.find(o => o.referenceId === referenceId);
+    console.log("Order status requested:", referenceId, order);
     res.render("status", order);
 });
 
