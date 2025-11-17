@@ -198,7 +198,7 @@ app.post("/notification", (req, res) => {
     if (data.statusCode == "99") {
         console.log(`Payment for order ${data.referenceId} failed.`);
         order.paymentCompleted = false;
-        io.emit("paymentStatus", {
+        io.emit(`paymentStatus${data.referenceId}`, {
             status: false,
             message: "Payment failed",
             referenceId: data.referenceId
@@ -206,7 +206,7 @@ app.post("/notification", (req, res) => {
     } else if (data.statusCode == "00") {
         console.log(`Payment for order ${data.referenceId} successful.`);
         order.paymentCompleted = true;
-        io.emit("paymentStatus", {
+        io.emit(`paymentStatus${data.referenceId}`, {
             status: true,
             message: "Payment successful",
             referenceId: data.referenceId
