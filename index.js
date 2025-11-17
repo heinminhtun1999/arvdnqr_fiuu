@@ -6,6 +6,7 @@ const path = require("path");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const fs = require("fs");
+const cors = require("cors");
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ const io = new Server(httpServer);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({ origin: "*" })); // Enable CORS for all origins
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -54,6 +56,9 @@ Orders Json
 const orderJsonFilePath = path.join(__dirname, "/public/orders.json");
 
 if (!fs.existsSync(orderJsonFilePath)) {
+    const data = fs.readFileSync(orderJsonFilePath);
+    console.log("Initial data:", JSON.parse(data));
+    fs.unlinkSync(orderJsonFilePath);
     fs.writeFileSync(orderJsonFilePath, JSON.stringify([]));
 }
 
@@ -76,7 +81,7 @@ app.post("/checkout", async (req, res) => {
     // Create request body for ARgo QR
     const body = {
         amount: data.total.toFixed(2),
-        applicationCode: process.env.appcode,
+        // applicationCode: process.env.appcode
         channelId: "24",
         currencyCode: "MYR",
         description: "TEST",
@@ -103,8 +108,8 @@ app.post("/checkout", async (req, res) => {
     // Create signature for request body for ARgo QR
     const hash = generateHash(body);
     body["signature"] = hash;
-    console.log("Checkout request received 2:", data, "Reference ID:", referenceId);
 
+    console.log("Checkout request received 2:", "Reference ID:", referenceId);
     try {
         const response = await axios.post(url, body, {
             headers: {
