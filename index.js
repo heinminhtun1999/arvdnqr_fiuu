@@ -52,19 +52,18 @@ io.on("connection", (socket) => {
 Orders Json
 ===========
 */
-
 const orderJsonFilePath = path.join(__dirname, "/public/orders.json");
 
 if (!fs.existsSync(orderJsonFilePath)) {
     fs.writeFileSync(orderJsonFilePath, JSON.stringify([]));
 }
 
-// (async () => {
-//     const data = fs.readFileSync(orderJsonFilePath);
-//     const orders = JSON.parse(data);
-//     console.log("Initial data:", orders);
-//     fs.unlinkSync(orderJsonFilePath);
-// })()
+(async () => {
+    const data = fs.readFileSync(orderJsonFilePath);
+    const orders = JSON.parse(data);
+    console.log("Initial data:", orders);
+    // fs.unlinkSync(orderJsonFilePath);
+})()
 
 
 
@@ -73,7 +72,6 @@ if (!fs.existsSync(orderJsonFilePath)) {
 Checkout Endpoint
 =================
 */
-
 app.post("/checkout", async (req, res) => {
     const { cartData } = req.body;
 
@@ -147,7 +145,6 @@ app.post("/checkout", async (req, res) => {
 Cancel Order
 ============
 */
-
 app.post("/cancel", async (req, res) => {
     const { orderData } = req.body;
     const order = JSON.parse(orderData);
@@ -205,7 +202,6 @@ app.post("/cancel", async (req, res) => {
 Notification Endpoint
 =====================
 */
-
 app.post("/notification", (req, res) => {
     console.log("Notification received:", req.body);
 
@@ -261,11 +257,10 @@ app.post("/notification", (req, res) => {
 });
 
 /*
-=====================
+===============
 Delivery Status
-=====================
+===============
 */
-
 app.get("/status", (req, res) => {
     const referenceId = req.query.referenceId;
     const order = getOrderFromJson(referenceId);
@@ -273,21 +268,20 @@ app.get("/status", (req, res) => {
     res.render("status", { order });
 });
 
-/*================
+/*
+================
 Start the Server
 ================
 */
-
 httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
 /* 
-================
+=================
 Utility Functions
-================ 
+================= 
 */
-
 function createOrderID() {
     let text = "ARV001-";
     const randomNumber = Math.floor(Math.random() * 1000);
