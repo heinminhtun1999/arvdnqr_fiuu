@@ -59,12 +59,12 @@ if (!fs.existsSync(orderJsonFilePath)) {
     fs.writeFileSync(orderJsonFilePath, JSON.stringify([]));
 }
 
-(async () => {
-    const data = fs.readFileSync(orderJsonFilePath);
-    const orders = JSON.parse(data);
-    console.log("Initial data:", orders);
-    fs.unlinkSync(orderJsonFilePath);
-})()
+// (async () => {
+//     const data = fs.readFileSync(orderJsonFilePath);
+//     const orders = JSON.parse(data);
+//     console.log("Initial data:", orders);
+//     fs.unlinkSync(orderJsonFilePath);
+// })()
 
 
 
