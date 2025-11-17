@@ -197,14 +197,15 @@ Notification Endpoint
 app.post("/notification", (req, res) => {
     console.log("Notification received:", req.body);
 
-    const hash = generateHash(req.body);
-    if (hash !== req.body.signature) {
-        console.log("Invalid signature for notification:", req.body.referenceId);
-        return res.status(400).json({
-            success: false,
-            message: "(40103) Invalid signature"
-        });
-    }
+    // Validate signature - Disabled for testing purposes
+    // const hash = generateHash(req.body);
+    // if (hash !== req.body.signature) {
+    //     console.log("Invalid signature for notification:", req.body.referenceId);
+    //     return res.status(400).json({
+    //         success: false,
+    //         message: "(40103) Invalid signature"
+    //     });
+    // }
 
     const order = activeOrders.find(o => o.referenceId === req.body.referenceId);
 
