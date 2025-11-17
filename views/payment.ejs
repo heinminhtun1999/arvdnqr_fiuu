@@ -62,6 +62,8 @@
     }, 1000);
     }
 
+    console.log("<%= data %>");
+    
     // Socket.io Client Setup
     
     const socket = io();
@@ -79,6 +81,7 @@
         window.location.href = "/";
       }
       else if (msg.status == true && msg.message == "Payment successful" && msg.referenceId == "<%= data.referenceId %>") {
+        console.log(msg.referenceId, "<%= data.referenceId %>");
         alert("Payment successful! You will be redirected to the homepage.");
         window.location.href = "/status?referenceId=<%= data.referenceId %>";
       }
