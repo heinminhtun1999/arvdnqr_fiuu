@@ -429,7 +429,6 @@ async function deliverProducts(referenceId) {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             });
-            console.log("response", response.data);
             const data = response.data.data;
 
             if (!success) {
@@ -463,4 +462,7 @@ async function deliverProducts(referenceId) {
         const timeoutDuration = Math.floor(Math.random() * 10) + 5; // Random delay between 5 to 15 seconds
         await new Promise(resolve => setTimeout(resolve, timeoutDuration * 1000));
     }
+
+    updateOrderInJson(referenceId, "isDelivering", false);
+    updateOrderInJson(referenceId, "active", false);
 }

@@ -57,6 +57,7 @@
       socket.emit("readyToDeliver", "<%= order.referenceId %>");
 
       socket.on("deliveryStatus", function (data) {
+        console.log("Delivery Status Update:", data);
         totalItemsElement.textContent = data.total;
         deliveredItemsElement.textContent = data.itemDelivered;
         successCountElement.textContent = data.successCount;
