@@ -429,7 +429,7 @@ async function deliverProducts(referenceId) {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             });
-
+            console.log("response", response.data);
             const data = response.data.data;
 
             if (data.statusCode === "00" && !success) {
