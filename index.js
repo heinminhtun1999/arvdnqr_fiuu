@@ -430,11 +430,11 @@ async function deliverProducts(referenceId) {
                 }
             });
 
-            const data = response.data;
+            const data = response.data.data;
 
-            if (data.response.statusCode === "00" && !success) {
+            if (data.statusCode === "00" && !success) {
                 deliveryStatus.refunded = true;
-            } else if (data.response.statusCode === "99" && !success) {
+            } else if (data.statusCode === "99" && !success) {
                 deliveryStatus.refunded = false;
             }
 
