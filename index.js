@@ -111,7 +111,8 @@ app.post("/checkout", async (req, res) => {
         timestamp: Date.now(),
         active: true,
         paymentCompleted: false,
-        totalQuantity: totalQuantity
+        totalQuantity: totalQuantity,
+        isDelivering: false
     }
 
     // Saving order to orders.json
@@ -325,7 +326,7 @@ function checkTimeout(duration, referenceId) {
     setTimeout(() => {
         const order = getOrderFromJson(referenceId);
         if (order && !order.paymentCompleted) {
-            order.active = false;
+            updateOrderInJson(referenceId, "active", false);
             io.to(`order_${referenceId}`).emit("paymentStatus", {
                 status: false,
                 message: "Payment expired",
@@ -372,6 +373,13 @@ async function deliverProducts(referenceId) {
     const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
 
     const order = getOrderFromJson(referenceId);
+
+    if (order.isDelivering) {
+        // console.log("Delivery already in progress for order:", referenceId);
+        return;
+    }
+
+    updateOrderInJson(referenceId, "isDelivering", true);
 
     let itemLeft = order.totalQuantity;
     let successCount = 0;
@@ -422,6 +430,7 @@ async function deliverProducts(referenceId) {
                 }
             });
 
+            const data = response.data;
 
             if (data.response.statusCode === "00" && !success) {
                 deliveryStatus.refunded = true;
