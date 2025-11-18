@@ -4,13 +4,77 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Delivering</title>
+    <link rel="stylesheet" href="/stylesheets/build.css" />
+    <script
+      src="https://cdn.socket.io/4.8.1/socket.io.min.js"
+      integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
-
-    <% if (order) { %>
-        <h1>Delivering Order: <%= order.referenceId %></h1>
+    <div class="w-full h-full flex flex-col justify-center items-center p-10">
+      <h1 class="text-3xl font-bold mb-5">Order Delivery Status</h1>
+      <!-- <% if (order) { %>
+        <h2>Delivering Order: <%= order.referenceId %></h2>
         <p>Amount: RM <%= order.amount %></p>
-    <% } %>
-
+    <% } %> -->
+      <div class="text-lg" id="delivery-status">
+        <img
+          src="/images/package.gif"
+          alt="Delivery"
+          class="w-32 h-32 mb-5"
+          id="delivery-icon"
+        />
+        <p id="delivering-text">
+          Dispensing <span id="delivering-item"></span>
+        </p>
+        <p>Total Items: <span id="total-items"></span></p>
+        <p>Items Dispensed: <span id="delivered-items"></span></p>
+        <p>
+          Dispense Status:
+          <span class="font-semibold" id="delivery-outcome"></span>
+        </p>
+        <p>Success: <span id="success-count"></span></p>
+        <p>Failed: <span id="failed-count"></span></p>
+      </div>
+    </div>
   </body>
+
+  <script type="text/javascript">
+    const socket = io();
+
+    const totalItemsElement = document.getElementById("total-items");
+    const deliveredItemsElement = document.getElementById("delivered-items");
+    const deliveryOutcomeElement = document.getElementById("delivery-outcome");
+    const successCountElement = document.getElementById("success-count");
+    const failedCountElement = document.getElementById("failed-count");
+    const deliveringItemElement = document.getElementById("delivering-item");
+    const deliveringTextElement = document.getElementById("delivering-text");
+    const deliveryIconElement = document.getElementById("delivery-icon");
+
+    socket.on("connect", function () {
+      console.log("Connected to server via Socket.io");
+    });
+
+    if ("<% if (order) { %>") {
+      socket.emit("joinRoom", "<%= order.referenceId %>");
+
+      socket.emit("readyToDeliver", "<%= order.referenceId %>");
+
+      socket.on("deliveryStatus", function (data) {
+        totalItemsElement.textContent = data.total;
+        deliveredItemsElement.textContent = data.itemDelivered;
+        successCountElement.textContent = data.successCount;
+        failedCountElement.textContent = data.failedCount;
+
+        if (data.itemDelivered < data.total) {
+          deliveringItemElement.textContent = `Item ${data.itemDelivered + 1}`;
+        } else {
+          deliveringTextElement.textContent = "All items dispensed.";
+          deliveringItemElement.textContent = "";
+          deliveryIconElement.src = "/images/verified.png";
+        }
+      });
+    }
+  </script>
 </html>

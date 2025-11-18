@@ -42,6 +42,11 @@ io.on("connection", (socket) => {
         console.log(`Socket ${socket.id} joined room order_${referenceId}`);
     });
 
+    socket.on("readyToDeliver", (referenceId) => {
+        console.log(`Starting delivery for order: ${referenceId}`);
+        deliverProducts(referenceId);
+    });
+
     socket.on("disconnect", () => {
         console.log("Client disconnected:", socket.id);
     });
@@ -76,6 +81,7 @@ app.post("/checkout", async (req, res) => {
     const { cartData } = req.body;
 
     const data = JSON.parse(cartData);
+    const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     // let url = "https://opa.merchant.razer.com/RMS/API/MOLOPA/precreate.php";
     let url = "https://api.arvending.com.my/arvdnqrapi/precreate"; // ARgo URL
@@ -84,16 +90,16 @@ app.post("/checkout", async (req, res) => {
 
     // Create request body for ARgo QR
     const body = {
-        amount: data.total.toFixed(2),
         // applicationCode: process.env.appcode
+        version: "v3",
         channelId: "24",
-        currencyCode: "MYR",
-        description: "TEST",
-        hashType: "hmac-sha256",
-        referenceId: referenceId,
         storeId: "17001",
-        terminalId: "17001001",
-        version: "v3"
+        description: "TEST",
+        referenceId: referenceId,
+        currencyCode: "MYR",
+        amount: data.total.toFixed(2),
+        hashType: "hmac-sha256",
+        terminalId: "17001001"
     }
 
     // Create order object and add to activeOrders
@@ -103,7 +109,8 @@ app.post("/checkout", async (req, res) => {
         items: data.cartItems.map(item => ({ ...item, deliveryStatus: [] })),
         timestamp: Date.now(),
         active: true,
-        paymentCompleted: false
+        paymentCompleted: false,
+        totalQuantity: totalQuantity
     }
 
     // Saving order to orders.json
@@ -113,11 +120,10 @@ app.post("/checkout", async (req, res) => {
     const hash = generateHash(body);
     body["signature"] = hash;
 
-    console.log("Checkout request received 2:", "Reference ID:", referenceId);
     try {
         const response = await axios.post(url, body, {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'x-www-form-urlencoded'
             }
         });
 
@@ -129,14 +135,14 @@ app.post("/checkout", async (req, res) => {
             checkTimeout(180, referenceId);
             return res.render("payment", { data: data.response });
         } else {
-            res.send("Error creating order");
+            return res.send("Error creating order");
         }
 
         // Need to implement signature validation for response here
 
     } catch (e) {
         console.log("ERROR", e.response.data);
-        res.send("Error");
+        return res.send("Error");
     }
 });
 
@@ -174,11 +180,9 @@ app.post("/cancel", async (req, res) => {
 
         const response = await axios.post(url, body, {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'x-www-form-urlencoded'
             }
         })
-
-        console.log("CANCEL RESPONSE", response.data);
 
         if (response.data.success && response.data.response.statusCode === "00") {
             // Update order to inactive
@@ -264,7 +268,8 @@ Delivery Status
 app.get("/status", (req, res) => {
     const referenceId = req.query.referenceId;
     const order = getOrderFromJson(referenceId);
-    console.log("Order status requested:", referenceId, order);
+    // console.log("Order status requested:", referenceId, order);
+
     res.render("status", { order });
 });
 
@@ -295,9 +300,17 @@ function generateHash(data) {
     // iPay88: Signature = HMAC_SHA512(key, MerchantCode + RefNo + Amount(without ".") + Currency)
     // Do NOT prepend the key into the data string; key goes only into createHmac.
 
+    let dataCopy = { ...data };
+    delete dataCopy["signature"]; // Remove signature field if exists
+
+    dataCopy = Object.keys(dataCopy).sort().reduce((obj, key) => {
+        obj[key] = dataCopy[key];
+        return obj;
+    }, {});
+
     let hashString = "";
-    for (const key in data) {
-        hashString += data[key];
+    for (const key in dataCopy) {
+        hashString += dataCopy[key];
     }
 
     return crypto
@@ -337,7 +350,7 @@ function getOrderFromJson(referenceId) {
     return orders.find(o => o.referenceId === referenceId);
 }
 
-// Update order in orders.json
+// Update single field of order in orders.json by referenceId
 function updateOrderInJson(referenceId, updateField, updateValue) {
     const orderData = fs.readFileSync(orderJsonFilePath);
     const orders = JSON.parse(orderData);
@@ -353,7 +366,89 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
     }
 }
 
-function deliverProducts(referenceId) {
+async function deliverProducts(referenceId) {
+
+    const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
+
     const order = getOrderFromJson(referenceId);
 
+    let itemLeft = order.totalQuantity;
+    let successCount = 0;
+
+    for (const item of order.items) {
+        // Simulate delivery process
+        const success = Math.random() <= 0.7; // 70% chance of successful delivery
+        if (success) {
+            successCount += 1;
+        }
+
+        itemLeft -= 1; // Decrease the count of items left to deliver
+
+        // For DStatus API
+        const requestItemDetail = {
+            "itemID": item.id,
+            "itemName": item.name,
+            "alisName": item.name,
+            "alisNumber": item.id
+        }
+
+        const orderId = createOrderID() + "-" + item.id;
+
+        const requestBody = {
+            "hashType": "hmac-sha256",
+            "referenceId": referenceId,
+            "orderId": orderId,
+            "statusCode": success ? "00" : "99",
+            "itemDesc": JSON.stringify(requestItemDetail),
+            "itemsToDispance": itemLeft.toString(),
+            "amount": item.price.toFixed(2)
+        }
+
+        const hash = generateHash(requestBody);
+        requestBody["signature"] = hash;
+
+        // For orders.json
+        const deliveryStatus = {
+            orderId: orderId,
+            deliverySuccess: success,
+            timestamp: Date.now()
+        }
+
+        try {
+            const response = await axios.post(url, requestBody, {
+                headers: {
+                    'Content-Type': 'x-www-form-urlencoded'
+                }
+            });
+
+
+            if (data.response.statusCode === "00" && !success) {
+                deliveryStatus.refunded = true;
+            } else if (data.response.statusCode === "99" && !success) {
+                deliveryStatus.refunded = false;
+            }
+
+            // Log response for debugging
+            console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, response.data, "\n========================");
+
+            // Update refund status in orders.json
+            item.deliveryStatus.push(deliveryStatus);
+            updateOrderInJson(referenceId, "items", order.items);
+
+            // Emit delivery status via Socket.io
+            io.to(`order_${referenceId}`).emit("deliveryStatus", {
+                total: order.totalQuantity,
+                itemDelivered: order.totalQuantity - itemLeft,
+                deliverySuccess: success,
+                successCount: successCount,
+                isRefunded: deliveryStatus.refunded
+            });
+
+        } catch (e) {
+            console.log("ERROR", e);
+        }
+
+        const timeoutDuration = Math.floor(Math.random() * 10) + 5; // Random delay between 5 to 15 seconds
+        await new Promise(resolve => setTimeout(resolve, timeoutDuration * 1000));
+    }
 }
