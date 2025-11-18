@@ -269,7 +269,7 @@ Delivery Status
 app.get("/status", (req, res) => {
     const referenceId = req.query.referenceId;
     const order = getOrderFromJson(referenceId);
-    // console.log("Order status requested:", referenceId, order);
+    console.log("Order status requested:", referenceId, order);
 
     res.render("status", { order });
 });
