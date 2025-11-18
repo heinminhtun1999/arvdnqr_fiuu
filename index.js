@@ -432,10 +432,12 @@ async function deliverProducts(referenceId) {
             console.log("response", response.data);
             const data = response.data.data;
 
-            if (data.statusCode === "00" && !success) {
-                deliveryStatus.refunded = true;
-            } else if (data.statusCode === "99" && !success) {
-                deliveryStatus.refunded = false;
+            if (!success) {
+                if (data.statusCode === "00") {
+                    deliveryStatus.refunded = true;
+                } else if (data.statusCode === "99") {
+                    deliveryStatus.refunded = false;
+                }
             }
 
             // Log response for debugging
