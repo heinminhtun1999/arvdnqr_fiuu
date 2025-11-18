@@ -7,6 +7,7 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const fs = require("fs");
 const cors = require("cors");
+const qs = require("qs");
 
 dotenv.config();
 
@@ -121,9 +122,9 @@ app.post("/checkout", async (req, res) => {
     body["signature"] = hash;
 
     try {
-        const response = await axios.post(url, body, {
+        const response = await axios.post(url, qs.stringify(body), {
             headers: {
-                'Content-Type': 'x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
 
@@ -178,9 +179,9 @@ app.post("/cancel", async (req, res) => {
 
     try {
 
-        const response = await axios.post(url, body, {
+        const response = await axios.post(url, qs.stringify(body), {
             headers: {
-                'Content-Type': 'x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
         })
 
@@ -415,9 +416,9 @@ async function deliverProducts(referenceId) {
         }
 
         try {
-            const response = await axios.post(url, requestBody, {
+            const response = await axios.post(url, qs.stringify(requestBody), {
                 headers: {
-                    'Content-Type': 'x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             });
 
