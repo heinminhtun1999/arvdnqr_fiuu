@@ -378,18 +378,8 @@ button, input:where([type='button'], [type='reset'], [type='submit']), ::file-se
   --tw-font-weight: var(--font-weight-extrabold);
   font-weight: var(--font-weight-extrabold);
 }
-.font-semibold {
-  --tw-font-weight: var(--font-weight-semibold);
-  font-weight: var(--font-weight-semibold);
-}
 .text-gray-500 {
   color: var(--color-gray-500);
-}
-.text-green-600 {
-  color: var(--color-green-600);
-}
-.text-red-600 {
-  color: var(--color-red-600);
 }
 .text-red-900 {
   color: var(--color-red-900);

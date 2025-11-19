@@ -64,12 +64,12 @@ if (!fs.existsSync(orderJsonFilePath)) {
     fs.writeFileSync(orderJsonFilePath, JSON.stringify([]));
 }
 
-(async () => {
-    const data = fs.readFileSync(orderJsonFilePath);
-    const orders = JSON.parse(data);
-    console.log("Initial data:", orders);
-    // fs.unlinkSync(orderJsonFilePath);
-})()
+// (async () => {
+//     const data = fs.readFileSync(orderJsonFilePath);
+//     const orders = JSON.parse(data);
+//     console.log("Initial data:", orders);
+//     // fs.unlinkSync(orderJsonFilePath);
+// })()
 
 
 
@@ -95,12 +95,12 @@ app.post("/checkout", async (req, res) => {
         version: "v3",
         channelId: "24",
         storeId: "ARarvgo01",
-        description: "TEST",
         referenceId: referenceId,
         currencyCode: "MYR",
         amount: data.total.toFixed(2),
         hashType: "hmac-sha256",
-        terminalId: "1119210argo"
+        terminalId: "1119210argo",
+        validityDuration: "180"
     }
 
     // Create order object and add to activeOrders
@@ -121,7 +121,7 @@ app.post("/checkout", async (req, res) => {
     // Create signature for request body for ARgo QR
     const hash = generateHash(body);
     body["signature"] = hash;
-
+    console.log("Request Body:", body);
     try {
         const response = await axios.post(url, qs.stringify(body), {
             headers: {
@@ -144,7 +144,7 @@ app.post("/checkout", async (req, res) => {
 
     } catch (e) {
         console.log("ERROR", e.response.data);
-        return res.send("Error");
+        return res.status(500).json(e.response.data);
     }
 });
 
