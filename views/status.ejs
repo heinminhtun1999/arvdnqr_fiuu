@@ -52,11 +52,11 @@
     });
 
     if ("<%= order %>") {
-      socket.emit("joinRoom", "<%= order.referenceId %>");
+      socket.emit("joinOrderRoom", "<%= order.referenceId %>");
 
       socket.emit("readyToDeliver", "<%= order.referenceId %>");
 
-      socket.on("deliveryStatus", function (data) {
+      socket.on("deliveryStatus", (data) => {
         console.log("Delivery Status Update:", data);
         totalItemsElement.textContent = data.total;
         deliveredItemsElement.textContent = data.itemDelivered;
