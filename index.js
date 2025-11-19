@@ -424,6 +424,7 @@ async function deliverProducts(referenceId) {
         }
 
         try {
+            console.log("Sending delivery status\n========================");
             const response = await axios.post(url, qs.stringify(requestBody), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
