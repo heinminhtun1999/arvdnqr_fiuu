@@ -374,10 +374,7 @@ async function deliverProducts(referenceId) {
 
     const order = getOrderFromJson(referenceId);
 
-    if (order.isDelivering) {
-        // console.log("Delivery already in progress for order:", referenceId);
-        return;
-    }
+    if (order.isDelivering) return; // Prevent multiple delivery processes
 
     updateOrderInJson(referenceId, "isDelivering", true);
 
@@ -385,83 +382,87 @@ async function deliverProducts(referenceId) {
     let successCount = 0;
 
     for (const item of order.items) {
-        // Simulate delivery process
-        const success = Math.random() <= 0.7; // 70% chance of successful delivery
-        if (success) {
-            successCount += 1;
-        }
 
-        itemLeft -= 1; // Decrease the count of items left to deliver
-
-        // For DStatus API
-        const requestItemDetail = {
-            "itemID": item.id,
-            "itemName": item.name,
-            "alisName": item.name,
-            "alisNumber": item.id
-        }
-
-        const orderId = createOrderID() + "-" + item.id;
-
-        const requestBody = {
-            "hashType": "hmac-sha256",
-            "referenceId": referenceId,
-            "orderId": orderId,
-            "statusCode": success ? "00" : "99",
-            "itemDesc": JSON.stringify(requestItemDetail),
-            "itemsToDispance": itemLeft.toString(),
-            "amount": item.price.toFixed(2)
-        }
-
-        const hash = generateHash(requestBody);
-        requestBody["signature"] = hash;
-
-        // For orders.json
-        const deliveryStatus = {
-            orderId: orderId,
-            deliverySuccess: success,
-            timestamp: Date.now()
-        }
-
-        try {
-            console.log("Sending delivery status\n========================");
-            const response = await axios.post(url, qs.stringify(requestBody), {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            });
-            const data = response.data.data;
-
-            if (!success) {
-                if (data.statusCode === "00") {
-                    deliveryStatus.refunded = true;
-                } else if (data.statusCode === "99") {
-                    deliveryStatus.refunded = false;
-                }
+        for (let i = 0; i < item.quantity; i++) {
+            // Simulate delivery process
+            const success = Math.random() <= 0.7; // 70% chance of successful delivery
+            if (success) {
+                successCount += 1;
             }
 
-            // Log response for debugging
-            console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, response.data, "\n========================");
+            itemLeft -= 1; // Decrease the count of items left to deliver
 
-            // Update refund status in orders.json
-            item.deliveryStatus.push(deliveryStatus);
-            updateOrderInJson(referenceId, "items", order.items);
+            // For DStatus API
+            const requestItemDetail = {
+                "itemID": item.id,
+                "itemName": item.name,
+                "alisName": item.name,
+                "alisNumber": item.id
+            }
 
-            // Emit delivery status via Socket.io
-            io.to(`order_${referenceId}`).emit("deliveryStatus", {
-                total: order.totalQuantity,
-                itemDelivered: order.totalQuantity - itemLeft,
+            const orderId = createOrderID() + "-" + item.id;
+
+            const requestBody = {
+                "hashType": "hmac-sha256",
+                "referenceId": referenceId,
+                "orderId": orderId,
+                "statusCode": success ? "00" : "99",
+                "itemDesc": JSON.stringify(requestItemDetail),
+                "itemsToDispance": itemLeft.toString(),
+                "amount": item.price.toFixed(2)
+            }
+
+            const hash = generateHash(requestBody);
+            requestBody["signature"] = hash;
+
+            // For orders.json
+            const deliveryStatus = {
+                orderId: orderId,
                 deliverySuccess: success,
-                successCount: successCount,
-                isRefunded: deliveryStatus.refunded
-            });
+                timestamp: Date.now()
+            }
 
-        } catch (e) {
-            console.log("ERROR", e);
+            try {
+                console.log("Request Body:", requestBody);
+                const response = await axios.post(url, qs.stringify(requestBody), {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+                const data = response.data.data;
+
+                if (!success) {
+                    if (data.statusCode === "00") {
+                        deliveryStatus.refunded = true;
+                    } else if (data.statusCode === "99") {
+                        deliveryStatus.refunded = false;
+                    }
+                }
+
+                // Log response for debugging
+                console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, response.data, "\n========================");
+
+                // Update refund status in orders.json
+                item.deliveryStatus.push(deliveryStatus);
+                updateOrderInJson(referenceId, "items", order.items);
+
+                // Emit delivery status via Socket.io
+                io.to(`order_${referenceId}`).emit("deliveryStatus", {
+                    total: order.totalQuantity,
+                    itemDelivered: order.totalQuantity - itemLeft,
+                    deliverySuccess: success,
+                    successCount: successCount,
+                    isRefunded: deliveryStatus.refunded
+                });
+
+            } catch (e) {
+                console.log("ERROR", e);
+            }
+
+            const timeoutDuration = Math.floor(Math.random() * 10) + 5; // Random delay between 5 to 15 seconds
+            await new Promise(resolve => setTimeout(resolve, timeoutDuration * 1000));
         }
 
-        const timeoutDuration = Math.floor(Math.random() * 10) + 5; // Random delay between 5 to 15 seconds
-        await new Promise(resolve => setTimeout(resolve, timeoutDuration * 1000));
     }
 
     updateOrderInJson(referenceId, "isDelivering", false);
