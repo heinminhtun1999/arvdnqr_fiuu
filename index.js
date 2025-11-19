@@ -94,13 +94,13 @@ app.post("/checkout", async (req, res) => {
         // applicationCode: process.env.appcode
         version: "v3",
         channelId: "24",
-        storeId: "17001",
+        storeId: "ARarvgo01",
         description: "TEST",
         referenceId: referenceId,
         currencyCode: "MYR",
         amount: data.total.toFixed(2),
         hashType: "hmac-sha256",
-        terminalId: "17001001"
+        terminalId: "1119210argo"
     }
 
     // Create order object and add to activeOrders
@@ -290,7 +290,7 @@ Utility Functions
 ================= 
 */
 function createOrderID() {
-    let text = "ARV001-";
+    let text = "1119210argo-";
     const randomNumber = Math.floor(Math.random() * 1000);
     const timestamp = Date.now();
     text += timestamp + randomNumber;
