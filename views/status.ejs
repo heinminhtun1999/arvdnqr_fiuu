@@ -61,14 +61,14 @@
         totalItemsElement.textContent = data.total;
         deliveredItemsElement.textContent = data.itemDelivered;
         successCountElement.textContent = data.successCount;
-        failedCountElement.textContent = data.failedCount;
+        failedCountElement.textContent = data.itemDelivered - data.successCount;
 
         if (data.itemDelivered < data.total) {
           deliveringItemElement.textContent = `Item ${data.itemDelivered + 1}`;
         } else {
           deliveringTextElement.textContent = "All items dispensed.";
           deliveringItemElement.textContent = "";
-          deliveryIconElement.src = "/images/verified.png";
+          deliveryIconElement.src = "/images/verified.gif";
         }
       });
     }
