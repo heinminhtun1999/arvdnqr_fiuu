@@ -123,9 +123,9 @@ app.post("/checkout", async (req, res) => {
     body["signature"] = hash;
     console.log("Request Body:", body);
     try {
-        const response = await axios.post(url, qs.stringify(body), {
+        const response = await axios.post(url, body, {
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             }
         });
 
@@ -180,9 +180,9 @@ app.post("/cancel", async (req, res) => {
 
     try {
 
-        const response = await axios.post(url, qs.stringify(body), {
+        const response = await axios.post(url, body, {
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             }
         })
 
@@ -424,9 +424,9 @@ async function deliverProducts(referenceId) {
 
             try {
                 console.log("Request Body:", requestBody);
-                const response = await axios.post(url, qs.stringify(requestBody), {
+                const response = await axios.post(url, requestBody, {
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
+                        'Content-Type': 'application/json'
                     }
                 });
                 const data = response.data.data;
