@@ -445,21 +445,22 @@ async function deliverProducts(referenceId) {
             }
 
             try {
-                console.log("Request Body:", requestBody);
                 const response = await axios.post(url, requestBody, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 });
-                const data = response.data.data;
+                const data = response.data;
 
-                // Validate signature
-                if (!validateSignature(data)) {
-                    console.log("Invalid signature in delivery response for order:", referenceId);
-                    continue; // Skip processing this response
-                }
 
-                if (!success) {
+                if (!success && data.response) {
+
+                    // Validate signature
+                    if (!validateSignature(data)) {
+                        console.log("Invalid signature in delivery response for order:", referenceId);
+                        continue; // Skip processing this response
+                    }
+
                     if (data.statusCode === "00") {
                         deliveryStatus.refunded = true;
                     } else if (data.statusCode === "99") {
@@ -468,7 +469,7 @@ async function deliverProducts(referenceId) {
                 }
 
                 // Log response for debugging
-                console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, response.data, "\n========================");
+                console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
 
                 // Update refund status in orders.json
                 item.deliveryStatus.push(deliveryStatus);
