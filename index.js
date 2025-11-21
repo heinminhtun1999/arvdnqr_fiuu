@@ -228,7 +228,6 @@ app.post("/notification", (req, res) => {
     console.log("Notification received:", req.headers["content-type"]);
 
     // Validate signature - Disabled for testing purposes
-    const hash = generateHash(req.body);
     if (!validateSignature(req.body)) {
         console.log("Invalid signature for notification:", req.body);
         // return res.status(400).json({
@@ -486,7 +485,7 @@ async function deliverProducts(referenceId) {
                 });
 
             } catch (e) {
-                console.log("ERROR", e);
+                console.log("ERROR", e.response ? e.response.data : e.message);
             }
 
             const timeoutDuration = Math.floor(Math.random() * 10) + 5; // Random delay between 5 to 15 seconds
