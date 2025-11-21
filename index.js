@@ -454,7 +454,7 @@ async function deliverProducts(referenceId) {
 
 
                 if (!success && data.data) {
-
+                    console.log("Signature Valid:", validateSignature(data.data));
                     // Validate signature
                     if (!validateSignature(data.data)) {
                         console.log("Invalid signature in delivery response for order:", referenceId);
