@@ -225,7 +225,6 @@ Notification Endpoint
 =====================
 */
 app.post("/notification", (req, res) => {
-    console.log("Notification received:", req.headers["content-type"]);
 
     // Validate signature - Disabled for testing purposes
     if (!validateSignature(req.body)) {
@@ -431,7 +430,7 @@ async function deliverProducts(referenceId) {
                 "orderId": orderId,
                 "statusCode": success ? "00" : "99",
                 "itemDesc": JSON.stringify(requestItemDetail),
-                "itemsToDispance": itemLeft.toString(),
+                "itemsToDispense": itemLeft.toString(),
                 "amount": item.price.toFixed(2)
             }
 
@@ -447,9 +446,9 @@ async function deliverProducts(referenceId) {
 
             try {
                 console.log("Request Body:", requestBody);
-                const response = await axios.post(url, qs.stringify(requestBody), {
+                const response = await axios.post(url, requestBody, {
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
+                        'Content-Type': 'application/json'
                     }
                 });
                 const data = response.data.data;
