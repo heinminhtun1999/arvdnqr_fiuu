@@ -453,7 +453,7 @@ async function deliverProducts(referenceId) {
                 const data = response.data;
 
                 console.log("This is data.data", data.data);
-                console.log("Signature Valid:", validateSignature(data.data));
+                // console.log("Signature Valid:", validateSignature(data.data));
                 if (!success && data.data) {
                     console.log("Signature Valid:", validateSignature(data.data));
                     // Validate signature
