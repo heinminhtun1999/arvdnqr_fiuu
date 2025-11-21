@@ -123,14 +123,23 @@ app.post("/checkout", async (req, res) => {
     body["signature"] = hash;
     console.log("Request Body:", body);
     try {
-        const response = await axios.post(url, body, {
+        const response = await axios.post(url, qs.stringify(body), {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
 
 
         const data = response.data;
+
+        if (!validateSignature(data.response)) {
+            console.log("Invalid signature for precreate:", referenceId);
+            // return res.status(400).json({
+            //     success: false,
+            //     message: "(40103) Invalid signature"
+            // });
+        }
+
         if (data.success && data.response.statusCode === "00") {
 
             // Start timeout check (3 minutes)
@@ -139,8 +148,6 @@ app.post("/checkout", async (req, res) => {
         } else {
             return res.send("Error creating order");
         }
-
-        // Need to implement signature validation for response here
 
     } catch (e) {
         console.log("ERROR", e.response.data);
@@ -186,7 +193,16 @@ app.post("/cancel", async (req, res) => {
             }
         })
 
-        if (response.data.success && response.data.response.statusCode === "00") {
+        const data = response.data;
+
+        if (!validateSignature(data.response)) {
+            return res.status(400).json({
+                success: false,
+                message: "(40103) Invalid signature"
+            });
+        }
+
+        if (data.success && data.response.statusCode === "00") {
             // Update order to inactive
             updateOrderInJson(referenceId, "active", false); //need to implement retry mechanism here
             console.log("Order cancelled successfully:", referenceId);
@@ -209,17 +225,17 @@ Notification Endpoint
 =====================
 */
 app.post("/notification", (req, res) => {
-    console.log("Notification received:", req.body);
+    console.log("Notification received:", req.headers["content-type"]);
 
     // Validate signature - Disabled for testing purposes
-    // const hash = generateHash(req.body);
-    // if (hash !== req.body.signature) {
-    //     console.log("Invalid signature for notification:", req.body.referenceId);
-    //     return res.status(400).json({
-    //         success: false,
-    //         message: "(40103) Invalid signature"
-    //     });
-    // }
+    const hash = generateHash(req.body);
+    if (!validateSignature(req.body)) {
+        console.log("Invalid signature for notification:", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "(40103) Invalid signature"
+        });
+    }
 
     const order = getOrderFromJson(req.body.referenceId);
 
@@ -252,7 +268,7 @@ app.post("/notification", (req, res) => {
     } else if (data.statusCode == "00") {
         console.log(`Payment for order ${data.referenceId} successful.`);
         updateOrderInJson(referenceId, "paymentCompleted", true);
-        io.to(`order_${referenceId}`).emit("paymentStatus", {
+        io.to(`order_${referenceId}`).emit("paymentStatus", { // emit notification to client to redirect the user to delivery page
             status: true,
             message: "Payment successful",
             referenceId
@@ -321,6 +337,14 @@ function generateHash(data) {
         .digest("hex");
 }
 
+// Validate Signature
+function validateSignature(data) {
+    const signature = data.signature;
+    const expectedHash = generateHash(data);
+    return signature === expectedHash;
+}
+
+// Payment Timeout Check
 function checkTimeout(duration, referenceId) {
 
     setTimeout(() => {
@@ -430,6 +454,12 @@ async function deliverProducts(referenceId) {
                     }
                 });
                 const data = response.data.data;
+
+                // Validate signature
+                if (!validateSignature(data)) {
+                    console.log("Invalid signature in delivery response for order:", referenceId);
+                    continue; // Skip processing this response
+                }
 
                 if (!success) {
                     if (data.statusCode === "00") {
