@@ -131,7 +131,7 @@ app.post("/checkout", async (req, res) => {
 
 
         const data = response.data;
-
+        console.log("Precreate Signature Valid:", validateSignature(data.response));
         if (!validateSignature(data.response)) {
             console.log("Invalid signature for precreate:", referenceId);
             // return res.status(400).json({
@@ -230,11 +230,11 @@ app.post("/notification", (req, res) => {
     // Validate signature - Disabled for testing purposes
     const hash = generateHash(req.body);
     if (!validateSignature(req.body)) {
-        console.log("Invalid signature for notification:", req.body.referenceId);
-        return res.status(400).json({
-            success: false,
-            message: "(40103) Invalid signature"
-        });
+        console.log("Invalid signature for notification:", req.body);
+        // return res.status(400).json({
+        //     success: false,
+        //     message: "(40103) Invalid signature"
+        // });
     }
 
     const order = getOrderFromJson(req.body.referenceId);
