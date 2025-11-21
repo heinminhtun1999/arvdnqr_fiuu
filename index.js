@@ -187,9 +187,9 @@ app.post("/cancel", async (req, res) => {
 
     try {
 
-        const response = await axios.post(url, body, {
+        const response = await axios.post(url, qs.stringify(body), {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
         })
 
@@ -447,9 +447,9 @@ async function deliverProducts(referenceId) {
 
             try {
                 console.log("Request Body:", requestBody);
-                const response = await axios.post(url, requestBody, {
+                const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 });
                 const data = response.data.data;
