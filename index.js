@@ -284,7 +284,7 @@ Delivery Status
 app.get("/status", (req, res) => {
     const referenceId = req.query.referenceId;
     const order = getOrderFromJson(referenceId);
-    console.log("Order status requested:", referenceId, order);
+    // console.log("Order status requested:", referenceId, order);
 
     res.render("status", { order });
 });
@@ -453,10 +453,10 @@ async function deliverProducts(referenceId) {
                 const data = response.data;
 
 
-                if (!success && data.response) {
+                if (!success && data.data) {
 
                     // Validate signature
-                    if (!validateSignature(data)) {
+                    if (!validateSignature(data.data)) {
                         console.log("Invalid signature in delivery response for order:", referenceId);
                         continue; // Skip processing this response
                     }
