@@ -125,7 +125,18 @@
       <div id="cart" class="border-2 rounded-md p-5 w-1/2 m-auto mt-5">
         <p class="text-center text-gray-500">Your cart is empty.</p>
       </div>
-      <form action="/checkout" method="POST">
+      <div class="mt-5">
+        <label class="mr-5 font-semibold">Select Payment Method:</label>
+        <div class="inline-block mr-3">
+          <input type="radio" name="paymentMethod" value="online" />
+          <label for="online">Online Banking/E-Wallet</label>
+        </div>
+        <div class="inline-block">
+          <input type="radio" name="paymentMethod" value="offline" checked />
+          <label for="offline">Duit Now</label>
+        </div>
+      </div>
+      <form method="POST" id="checkout_form" action="/offline">
         <input type="hidden" name="cartData" id="cartData" value="" />
         <input
           type="submit"
@@ -138,6 +149,21 @@
 
   <script>
     const addBtns = document.querySelectorAll(".add-button");
+    const form = document.getElementById("checkout_form");
+    const paymentMethodInputs = document.querySelectorAll(
+      'input[name="paymentMethod"]'
+    );
+
+    paymentMethodInputs.forEach((input) => {
+      input.addEventListener("change", () => {
+        checkout_form.action = "/" + input.value;
+        if (input.value == "online") {
+          form.method = "GET";
+        } else {
+          form.method = "POST";
+        }
+      });
+    });
 
     const cart = document.getElementById("cart");
     const cartDataInput = document.getElementById("cartData");

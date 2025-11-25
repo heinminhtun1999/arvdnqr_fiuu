@@ -180,6 +180,7 @@ button, input:where([type='button'], [type='reset'], [type='submit']), ::file-se
   --text-3xl--line-height: calc(2.25 / 1.875);
   --text-5xl: 3rem;
   --text-5xl--line-height: 1;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
   --radius-md: 0.375rem;
@@ -215,6 +216,15 @@ button, input:where([type='button'], [type='reset'], [type='submit']), ::file-se
 }
 .mt-10 {
   margin-top: calc(var(--spacing) * 10);
+}
+.mr-2 {
+  margin-right: calc(var(--spacing) * 2);
+}
+.mr-3 {
+  margin-right: calc(var(--spacing) * 3);
+}
+.mr-5 {
+  margin-right: calc(var(--spacing) * 5);
 }
 .mb-2 {
   margin-bottom: calc(var(--spacing) * 2);
@@ -374,6 +384,10 @@ button, input:where([type='button'], [type='reset'], [type='submit']), ::file-se
 .font-extrabold {
   --tw-font-weight: var(--font-weight-extrabold);
   font-weight: var(--font-weight-extrabold);
+}
+.font-semibold {
+  --tw-font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
 }
 .text-gray-500 {
   color: var(--color-gray-500);

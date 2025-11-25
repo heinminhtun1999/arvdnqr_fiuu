@@ -17,7 +17,7 @@ Initialization and Configuration
 ================================
 */
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 const app = express();
 
@@ -72,13 +72,12 @@ if (!fs.existsSync(orderJsonFilePath)) {
 // })()
 
 
-
 /*
 =================
-Checkout Endpoint
+Offline Checkout Endpoint
 =================
 */
-app.post("/checkout", async (req, res) => {
+app.post("/offline", async (req, res) => {
     const { cartData } = req.body;
 
     const data = JSON.parse(cartData);
@@ -224,7 +223,7 @@ app.post("/cancel", async (req, res) => {
 Notification Endpoint
 =====================
 */
-app.post("/notification", (req, res) => {
+app.post("/offline/notification", (req, res) => {
 
     // Validate signature - Disabled for testing purposes
     if (!validateSignature(req.body)) {
@@ -284,10 +283,18 @@ Delivery Status
 app.get("/status", (req, res) => {
     const referenceId = req.query.referenceId;
     const order = getOrderFromJson(referenceId);
-    // console.log("Order status requested:", referenceId, order);
-
     res.render("status", { order });
 });
+
+
+/*
+=================
+Online Checkout Endpoint
+=================
+*/
+app.get("/online", (req, res) => {
+
+})
 
 /*
 ================
