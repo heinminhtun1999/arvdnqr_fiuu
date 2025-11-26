@@ -286,15 +286,67 @@ app.get("/status", (req, res) => {
     res.render("status", { order });
 });
 
-
 /*
 =================
 Online Checkout Endpoint
 =================
 */
-app.get("/online", (req, res) => {
+app.get("/online", async (req, res) => {
+    const { cartData } = req.query;
 
-})
+    const data = JSON.parse(cartData);
+    const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    const currentURL = req.protocol + '://' + req.get('host') + "/online";
+    const returnURL = currentURL + "/return";
+    const callbackURL = currentURL + "/notification";
+    const cancelURL = currentURL + "/cancel";
+
+    let url = "https://fonlinedemo.onrender.com";
+
+    const referenceId = createOrderID();
+
+    // Create request body for ARgo QR
+    const body = {
+        amount: data.total.toFixed(2),
+        referenceId: referenceId,
+        bill_name: "Clarie James",
+        bill_email: "clariesjames@example.com",
+        bill_mobile: "0123456789",
+        bill_desc: JSON.stringify(data.cartItems),
+        currency: "MYR",
+        returnurl: returnURL,
+        callbackurl: callbackURL,
+        cancelurl: cancelURL,
+        waittime: "180",
+        PaymentExpirationTime: new Date(Date.now() + 3 * 60 * 1000).toISOString(), // 3 minutes from now
+        metadata: JSON.stringify({ machine_id: "3213213" }),
+        guest_checkout: "0"
+    }
+
+    // Create order object and add to activeOrders
+    const order = {
+        referenceId: referenceId,
+        amount: data.total.toFixed(2),
+        items: data.cartItems.map(item => ({ ...item, deliveryStatus: [] })),
+        timestamp: Date.now(),
+        active: true,
+        paymentCompleted: false,
+        totalQuantity: totalQuantity,
+        isDelivering: false
+    }
+
+    // Saving order to orders.json
+    addOrderToJson(order);
+
+    // Create signature for request body for ARgo QR
+    const hash = generateHash(body);
+    body["signature"] = hash;
+
+    const queryString = qs.stringify(body);
+    const paymentURL = url + "?" + queryString;
+    res.redirect(paymentURL);
+});
 
 /*
 ================
@@ -326,7 +378,7 @@ function generateHash(data) {
     let dataCopy = { ...data };
     delete dataCopy["signature"]; // Remove signature field if exists
 
-    dataCopy = Object.keys(dataCopy).sort().reduce((obj, key) => {
+    dataCopy = Object.keys(dataCopy).sort((a, b) => a.localeCompare(b)).reduce((obj, key) => {
         obj[key] = dataCopy[key];
         return obj;
     }, {});
@@ -335,6 +387,8 @@ function generateHash(data) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
+
+    console.log("Hash String:", hashString);
 
     return crypto
         .createHmac("sha256", process.env.key)
@@ -452,9 +506,9 @@ async function deliverProducts(referenceId) {
             }
 
             try {
-                const response = await axios.post(url, requestBody, {
+                const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 });
                 const data = response.data;

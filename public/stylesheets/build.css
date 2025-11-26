@@ -217,9 +217,6 @@ button, input:where([type='button'], [type='reset'], [type='submit']), ::file-se
 .mt-10 {
   margin-top: calc(var(--spacing) * 10);
 }
-.mr-2 {
-  margin-right: calc(var(--spacing) * 2);
-}
 .mr-3 {
   margin-right: calc(var(--spacing) * 3);
 }
