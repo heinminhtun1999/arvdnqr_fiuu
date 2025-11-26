@@ -226,8 +226,8 @@ Notification Endpoint
 app.post("/offline/notification", (req, res) => {
 
     // Validate signature - Disabled for testing purposes
+    console.log("Signature Valid:", validateSignature(req.body));
     if (!validateSignature(req.body)) {
-        console.log("Invalid signature for notification:", req.body);
         // return res.status(400).json({
         //     success: false,
         //     message: "(40103) Invalid signature"
