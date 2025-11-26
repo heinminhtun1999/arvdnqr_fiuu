@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
 
     socket.on("readyToDeliver", (referenceId) => {
         console.log(`Starting delivery for order: ${referenceId}`);
-        deliverProducts(referenceId);
+        // deliverProducts(referenceId);
     });
 
     socket.on("disconnect", () => {
