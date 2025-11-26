@@ -134,10 +134,10 @@ app.post("/offline", async (req, res) => {
 
         if (!validateSignature(data.response)) {
             console.log("Invalid signature for precreate:", referenceId);
-            // return res.status(400).json({
-            //     success: false,
-            //     message: "(40103) Invalid signature"
-            // });
+            return res.status(400).json({
+                success: false,
+                message: "(40103) Invalid signature from ARgo"
+            });
         }
 
         if (data.success && data.response.statusCode === "00") {
@@ -198,6 +198,7 @@ app.post("/cancel", async (req, res) => {
         const data = response.data;
         console.log("Cancel Response Data:", data);
         if (!validateSignature(data.response)) {
+            console.log("Invalid signature for cancel response:", referenceId);
             return res.status(400).json({
                 success: false,
                 message: "(40103) Invalid signature"
@@ -229,12 +230,12 @@ Notification Endpoint
 app.post("/offline/notification", (req, res) => {
 
     // Validate signature - Disabled for testing purposes
-    console.log("Signature Valid:", validateSignature(req.body));
     if (!validateSignature(req.body)) {
-        // return res.status(400).json({
-        //     success: false,
-        //     message: "(40103) Invalid signature"
-        // });
+        console.log("Invalid signature for notification:", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "(40103) Invalid signature"
+        });
     }
 
     const order = getOrderFromJson(req.body.referenceId);
@@ -456,7 +457,7 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 }
 
 async function deliverProducts(referenceId) {
-    console.log("Delivery Initiated")
+
     const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
 
     const order = getOrderFromJson(referenceId);
@@ -522,10 +523,10 @@ async function deliverProducts(referenceId) {
                 console.log("Dstatus Response Data:", data);
                 // console.log("Signature Valid:", validateSignature(data.data));
                 if (!success && data.data) {
-                    console.log("Signature Valid:", validateSignature(data.data));
+
                     // Validate signature
                     if (!validateSignature(data.data)) {
-                        console.log("Invalid signature in delivery response for order:", referenceId);
+                        console.log("Invalid signature in refund response for order:", referenceId);
                         continue; // Skip processing this response
                     }
 
