@@ -388,8 +388,6 @@ function generateHash(data) {
         hashString += dataCopy[key];
     }
 
-    console.log("Hash String:", hashString);
-
     return crypto
         .createHmac("sha256", process.env.key)
         .update(hashString, "utf8")
