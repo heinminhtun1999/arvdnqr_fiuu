@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("readyToDeliver", (referenceId) => {
-        console.log(`Starting delivery for order: ${referenceId}`);
+        // console.log(`Starting delivery for order: ${referenceId}`);
         deliverProducts(referenceId);
     });
 
@@ -130,7 +130,8 @@ app.post("/offline", async (req, res) => {
 
 
         const data = response.data;
-        console.log("Precreate Signature Valid:", validateSignature(data.response));
+        console.log("Response Data:", data);
+
         if (!validateSignature(data.response)) {
             console.log("Invalid signature for precreate:", referenceId);
             // return res.status(400).json({
@@ -184,6 +185,8 @@ app.post("/cancel", async (req, res) => {
     const hash = generateHash(body);
     body["signature"] = hash;
 
+    console.log("Cancel Request Body:", body);
+
     try {
 
         const response = await axios.post(url, qs.stringify(body), {
@@ -193,7 +196,7 @@ app.post("/cancel", async (req, res) => {
         })
 
         const data = response.data;
-
+        console.log("Cancel Response Data:", data);
         if (!validateSignature(data.response)) {
             return res.status(400).json({
                 success: false,
@@ -253,6 +256,9 @@ app.post("/offline/notification", (req, res) => {
     }
 
     const data = req.body;
+
+    console.log("Notification Data:", data);
+
     const referenceId = data.referenceId;
     if (data.statusCode == "99") {
         console.log(`Payment for order ${data.referenceId} failed.`);
@@ -503,6 +509,8 @@ async function deliverProducts(referenceId) {
                 timestamp: Date.now()
             }
 
+            console.log("Dstatus Request Body:", requestBody);
+
             try {
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
@@ -511,7 +519,7 @@ async function deliverProducts(referenceId) {
                 });
                 const data = response.data;
 
-                console.log("This is data.data", data.data);
+                console.log("Dstatus Response Data:", data);
                 // console.log("Signature Valid:", validateSignature(data.data));
                 if (!success && data.data) {
                     console.log("Signature Valid:", validateSignature(data.data));
