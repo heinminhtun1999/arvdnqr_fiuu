@@ -128,16 +128,52 @@
       <div class="mt-5">
         <label class="mr-5 font-semibold">Select Payment Method:</label>
         <div class="inline-block mr-3">
-          <input type="radio" name="paymentMethod" value="online" />
+          <input type="radio" name="paymentMethod" value="online" id="online" />
           <label for="online">Online Banking/E-Wallet</label>
         </div>
         <div class="inline-block">
-          <input type="radio" name="paymentMethod" value="offline" checked />
+          <input
+            type="radio"
+            name="paymentMethod"
+            value="offline"
+            checked
+            id="offline"
+          />
           <label for="offline">Duit Now</label>
         </div>
       </div>
+      <div>
+        <label class="mr-5 font-semibold">Machine ID:</label>
+        <input
+          type="radio"
+          name="machine_id"
+          value="testmachine2"
+          checked
+          id="testmachine2"
+        />
+        <label for="testmachine2">testmachine2</label>
+        <input
+          type="radio"
+          name="machine_id"
+          value="1119210argo"
+          id="1119210argo"
+        />
+        <label for="1119210argo">1119210argo</label>
+        <input
+          type="radio"
+          name="machine_id"
+          value="unregistered"
+          id="unregistered"
+        />
+        <label for="unregistered">Un-registered ID</label>
+      </div>
       <form method="POST" id="checkout_form" action="/offline">
-        <input type="hidden" name="cartData" id="cartData" value="" />
+        <input
+          type="hidden"
+          name="cartData"
+          id="cartData"
+          value='{"machine_id": "testmachine2"}'
+        />
         <input
           type="submit"
           value="Checkout"
@@ -153,6 +189,14 @@
     const paymentMethodInputs = document.querySelectorAll(
       'input[name="paymentMethod"]'
     );
+    const machineIdInputs = document.querySelectorAll(
+      'input[name="machine_id"]'
+    );
+
+    const cart = document.getElementById("cart");
+    const cartDataInput = document.getElementById("cartData");
+
+    const cartItems = [];
 
     paymentMethodInputs.forEach((input) => {
       input.addEventListener("change", () => {
@@ -165,10 +209,23 @@
       });
     });
 
-    const cart = document.getElementById("cart");
-    const cartDataInput = document.getElementById("cartData");
+    machineIdInputs.forEach((input) => {
+      input.addEventListener("change", (e) => {
+        const selectedMachineId = e.target.value;
+        const originalCartData = JSON.parse(cartDataInput.value || "{}");
+        cartDataInput.value = JSON.stringify({
+          ...originalCartData,
+          machine_id: selectedMachineId,
+        });
+      });
+    });
 
-    const cartItems = [];
+    form.addEventListener("submit", (e) => {
+      if (cartItems.length === 0) {
+        e.preventDefault();
+        alert("Your cart is empty. Please add items to the cart.");
+      }
+    });
 
     // Add to cart button event listeners
     addBtns.forEach((button) => {
@@ -195,7 +252,10 @@
           });
         }
         renderCart();
+
+        const originalCartData = JSON.parse(cartDataInput.value || "{}");
         cartDataInput.value = JSON.stringify({
+          ...originalCartData,
           cartItems: cartItems,
           total: calculateTotal(),
         });

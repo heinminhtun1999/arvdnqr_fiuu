@@ -33,6 +33,9 @@
         <p>Success: <span id="success-count"></span></p>
         <p>Failed: <span id="failed-count"></span></p>
       </div>
+      <button
+        onclick="window.location.href='/'"
+        class="mt-5 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 cursor-pointer disabled:bg-gray-300" disabled id="bth_btn">Back to Home</button>
     </div>
   </body>
 
@@ -46,6 +49,7 @@
     const deliveringItemElement = document.getElementById("delivering-item");
     const deliveringTextElement = document.getElementById("delivering-text");
     const deliveryIconElement = document.getElementById("delivery-icon");
+    const backToHomeButton = document.getElementById("bth_btn");
 
     socket.on("connect", function () {
       console.log("Connected to server via Socket.io");
@@ -69,6 +73,7 @@
           deliveringTextElement.textContent = "All items dispensed.";
           deliveringItemElement.textContent = "";
           deliveryIconElement.src = "/images/verified.gif";
+          backToHomeButton.disabled = false;
         }
       });
     }

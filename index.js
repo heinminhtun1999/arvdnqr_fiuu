@@ -81,12 +81,13 @@ app.post("/offline", async (req, res) => {
     const { cartData } = req.body;
 
     const data = JSON.parse(cartData);
+    console.log(data)
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     // let url = "https://opa.merchant.razer.com/RMS/API/MOLOPA/precreate.php";
     let url = "https://api.arvending.com.my/arvdnqrapi/precreate"; // ARgo URL
 
-    const referenceId = createOrderID();
+    const referenceId = createOrderID(data.machine_id);
 
     // Create request body for ARgo QR
     const body = {
@@ -369,8 +370,8 @@ httpServer.listen(PORT, () => {
 Utility Functions
 ================= 
 */
-function createOrderID() {
-    let text = "1119210argo-";
+function createOrderID(machine_id) {
+    let text = machine_id + "-";
     const randomNumber = Math.floor(Math.random() * 1000);
     const timestamp = Date.now();
     text += timestamp + randomNumber;
@@ -520,7 +521,6 @@ async function deliverProducts(referenceId) {
                 });
                 const data = response.data;
 
-                console.log("Dstatus Response Data:", data);
                 // console.log("Signature Valid:", validateSignature(data.data));
                 if (!success && data.data) {
 
