@@ -86,7 +86,7 @@ app.post("/offline", async (req, res) => {
 
     // let url = "https://opa.merchant.razer.com/RMS/API/MOLOPA/precreate.php";
     // let url = "https://api.arvending.com.my/arvdnqrapi/precreate"; // ARgo URL
-    let url = "https://argo.arvending.com.my/arvdnqrapi/precreate"; // ARgo URL
+    let url = "https://argo.arvending.com.my/arvdnqrapi/precreate/"; // ARgo URL
 
     const referenceId = createOrderID(data.machine_id);
 
@@ -176,7 +176,7 @@ app.post("/cancel", async (req, res) => {
     const referenceId = order.referenceId;
 
     // const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
-    const url = "https://argo.arvending.com.my/arvdnqrapi/reversal";
+    const url = "https://argo.arvending.com.my/arvdnqrapi/reversal/";
 
     const body = {
         version: "v3",
@@ -462,7 +462,7 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 async function deliverProducts(referenceId) {
 
     // const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
-    const url = "http://argo.arvending.com.my/arvdnqrapi/dstatus";
+    const url = "http://argo.arvending.com.my/arvdnqrapi/dstatus/";
 
     const order = getOrderFromJson(referenceId);
 
