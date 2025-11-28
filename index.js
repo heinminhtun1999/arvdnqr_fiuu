@@ -152,8 +152,8 @@ app.post("/offline", async (req, res) => {
         }
 
     } catch (e) {
-        console.log("ERROR", e.response);
-        return res.status(500).json(e.response);
+        console.log("ERROR", e.response.data);
+        return res.status(500).json(e.response.data);
     }
 });
 
@@ -219,7 +219,7 @@ app.post("/cancel", async (req, res) => {
         // Need to implement signature validation for response here
 
     } catch (e) {
-        console.log("ERROR", e);
+        console.log("ERROR", e.response.data);
     }
 
     return res.redirect("/");
