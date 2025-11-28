@@ -462,7 +462,7 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 async function deliverProducts(referenceId) {
 
     // const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
-    const url = "http://argo.arvending.com.my/arvdnqrapi/dstatus/";
+    const url = "https://argo.arvending.com.my/arvdnqrapi/dstatus/";
 
     const order = getOrderFromJson(referenceId);
 
