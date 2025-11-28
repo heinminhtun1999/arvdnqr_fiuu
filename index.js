@@ -492,7 +492,8 @@ async function deliverProducts(referenceId) {
                 "alisNumber": item.id
             }
 
-            const orderId = createOrderID() + "-" + item.id;
+            const machine_id = order.referenceId.split("-")[0];
+            const orderId = createOrderID(machine_id) + "-" + item.id;
 
             const requestBody = {
                 "hashType": "hmac-sha256",
