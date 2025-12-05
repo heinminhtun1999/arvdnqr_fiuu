@@ -358,6 +358,20 @@ app.get("/online", async (req, res) => {
     res.redirect(paymentURL);
 });
 
+app.get("/online/return", (req, res) => {
+    console.log("Return Data:", req.query);
+    res.send("Return URL - Payment Completed. You can close this page.");
+});
+
+app.post("/online/notification", (req, res) => {
+    console.log("Online Notification Data:", req.body);
+    res.send("RECEIVEDOK");
+});
+
+app.get("/online/cancel", (req, res) => {
+    res.send("Cancel URL - Payment Cancelled. You can close this page.");
+});
+
 /*
 ================
 Start the Server
