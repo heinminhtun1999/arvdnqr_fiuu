@@ -310,7 +310,7 @@ app.get("/online", async (req, res) => {
     const currentURL = req.protocol + '://' + req.get('host') + "/online";
     const returnURL = currentURL + "/return";
     const callbackURL = currentURL + "/notification";
-    const cancelURL = currentURL + "/cancel";
+    const cancelURL = req.protocol + '://' + req.get('host');
 
     let url = "https://fonlinedemo.onrender.com";
 
