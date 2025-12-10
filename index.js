@@ -388,7 +388,7 @@ Utility Functions
 */
 function createOrderID(machine_id) {
     let text = machine_id + "-";
-    const randomNumber = Math.floor(Math.random() * 1000);
+    const randomNumber = Math.floor(Math.random() * 1000) + 1000;
     const timestamp = Date.now();
     const randomNumber2 = Math.floor(Math.random() * 1000);
     text += Math.round(timestamp/randomNumber2 * 1.5) + randomNumber;
