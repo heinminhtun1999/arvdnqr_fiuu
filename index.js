@@ -314,7 +314,7 @@ app.get("/online", async (req, res) => {
 
     let url = "https://fonlinedemo.onrender.com";
 
-    const referenceId = createOrderID();
+    const referenceId = createOrderID(data.machine_id);
 
     // Create request body for ARgo QR
     const body = {
