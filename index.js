@@ -323,7 +323,7 @@ app.get("/online", async (req, res) => {
         bill_name: "Clarie James",
         bill_email: "clariesjames@example.com",
         bill_mobile: "0123456789",
-        bill_desc: JSON.stringify(data.cartItems),
+        bill_desc: encodeURIComponent(JSON.stringify(data.cartItems)),
         currency: "MYR",
         returnurl: returnURL,
         callbackurl: callbackURL,
