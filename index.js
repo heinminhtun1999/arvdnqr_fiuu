@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const fs = require("fs");
 const cors = require("cors");
 const qs = require("qs");
+const { platform } = require("os");
 
 dotenv.config();
 
@@ -113,7 +114,8 @@ app.post("/offline", async (req, res) => {
         active: true,
         paymentCompleted: false,
         totalQuantity: totalQuantity,
-        isDelivering: false
+        isDelivering: false,
+        platform: "arvdnqr"
     }
 
     // Saving order to orders.json
@@ -267,6 +269,7 @@ app.post("/offline/notification", (req, res) => {
     if (data.statusCode == "99") {
         console.log(`Payment for order ${data.referenceId} failed.`);
         updateOrderInJson(referenceId, "paymentCompleted", false);
+        updateOrderInJson(referenceId, "active", false);
         io.to(`order_${referenceId}`).emit("paymentStatus", {
             status: false,
             message: "Payment failed",
@@ -287,13 +290,20 @@ app.post("/offline/notification", (req, res) => {
 
 /*
 ===============
-Delivery Status
+Status Page
 ===============
 */
 app.get("/status", (req, res) => {
     const referenceId = req.query.referenceId;
     const order = getOrderFromJson(referenceId);
-    res.render("status", { order });
+
+    const { success, message } = req.query;
+
+    if (success && message) {
+        return res.render("status", { order: {}, success: success === false, message });
+    }
+
+    return res.render("status", { order, success: true, message: "Payment successful"});
 });
 
 /*
@@ -343,7 +353,8 @@ app.get("/online", async (req, res) => {
         active: true,
         paymentCompleted: false,
         totalQuantity: totalQuantity,
-        isDelivering: false
+        isDelivering: false,
+        platform: "eshop2" // Indicate online platform
     }
 
     // Saving order to orders.json
@@ -355,21 +366,108 @@ app.get("/online", async (req, res) => {
 
     const queryString = qs.stringify(body);
     const paymentURL = url + "?" + queryString;
-    res.redirect(paymentURL);
+
+    await checkTimeout(180, referenceId); // Start timeout check (3 minutes)
+    return res.redirect(paymentURL);
 });
 
+
+/*
+=================
+Online Return Endpoint
+=================
+*/
 app.get("/online/return", (req, res) => {
-    console.log("Return Data:", req.query);
-    res.send("Return URL - Payment Completed. You can close this page.");
+
+    // Validate signature 
+    if (!validateSignature(req.query)) {
+        console.log("Invalid signature for notification:", req.query.referenceId);
+        return res.redirect("/status?success=false&message=Invalid%20signature");
+    }
+
+    const order = getOrderFromJson(req.query.referenceId);
+
+    if (!order) {
+        console.log("Order not found for notification:", req.query.referenceId);
+        return res.redirect("/status?success=false&message=Order%20not%20found");
+    }
+
+    if (!order.active) {
+        console.log("Order is expired", req.query.referenceId);
+        return res.redirect("/status?success=false&message=Order%20is%20expired");
+    }
+
+    const data = req.query;
+
+    console.log("Return Data:", data);
+
+    if (data.statusCode == "00") {
+        updateOrderInJson(referenceId, "paymentCompleted", true);
+        return res.redirect("/status?referenceId=" + referenceId);
+    } else if (data.statusCode == "11") {
+        updateOrderInJson(referenceId, "paymentCompleted", false);
+        updateOrderInJson(referenceId, "active", false);
+        return res.redirect("/status?success=false&message=Payment%20failed&referenceId=" + referenceId);
+    } else {
+        return res.redirect("/status?success=false&message=Payment%20pending&referenceId=" + referenceId);
+    }
 });
 
+
+/*
+=================
+Online Notification Endpoint
+=================
+*/
 app.post("/online/notification", (req, res) => {
-    console.log("Online Notification Data:", req.body);
-    res.send("RECEIVEDOK");
+
+    const { error_code, error_desc } = req.body;
+
+    
+     // Validate signature 
+    if (!validateSignature(req.body)) {
+        console.log("Invalid signature for notification:", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "Invalid signature"
+        });
+    }
+
+    const order = getOrderFromJson(req.body.referenceId);
+
+    if (!order) {
+        console.log("Order not found for notification:", req.body.referenceId);
+        return res.status(404).json({
+            success: false,
+            message: "Order not found"
+        });
+    }
+
+    if (!order.active) {
+        console.log("Order is expired", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "Order is expired"
+        });
+    }
+
+    if (!order.isDelivering){
+        // Start delivery process if not already started
+        deliverProducts(req.body.referenceId);
+    }
+
+    const data = req.body;
+
+    return res.send({ success: true, message: "RECEIVEDOK" });
 });
 
+/*
+=================
+Online Cancel Endpoint
+=================
+*/
 app.get("/online/cancel", (req, res) => {
-    res.send("Cancel URL - Payment Cancelled. You can close this page.");
+    return res.send("Cancel URL - Payment Cancelled. You can close this page.");
 });
 
 /*
@@ -391,7 +489,7 @@ function createOrderID(machine_id) {
     const randomNumber = Math.floor(Math.random() * 1000) + 1000;
     const timestamp = Date.now();
     const randomNumber2 = Math.floor(Math.random() * 1000);
-    text += Math.round(timestamp/randomNumber2 * 1.5) + randomNumber;
+    text += Math.round(timestamp / randomNumber2 * 1.5) + randomNumber;
     return text;
 }
 
@@ -477,7 +575,6 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 async function deliverProducts(referenceId) {
 
     // const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
-    const url = "https://argo.arvending.com.my/arvdnqrapi/dstatus/";
 
     const order = getOrderFromJson(referenceId);
 
@@ -511,13 +608,16 @@ async function deliverProducts(referenceId) {
             const orderId = createOrderID(machine_id) + "-" + item.id;
 
             const requestBody = {
-                "hashType": "hmac-sha256",
                 "referenceId": referenceId,
                 "orderId": orderId,
                 "statusCode": success ? "00" : "99",
                 "itemDesc": JSON.stringify(requestItemDetail),
                 "itemsToDispense": itemLeft.toString(),
                 "amount": item.price.toFixed(2)
+            }
+            
+            if (order.platform === "arvdnqr") {
+                requestBody["hashType"] = "hmac-sha256";
             }
 
             const hash = generateHash(requestBody);
@@ -533,6 +633,10 @@ async function deliverProducts(referenceId) {
             console.log("Dstatus Request Body:", requestBody);
 
             try {
+
+                const url = order.platform === "arvdnqr" ? 
+                "https://argo.arvending.com.my/arvdnqrapi/dstatus/" : "https://fonlinedemo.onrender.com/dstatus";
+
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -549,9 +653,9 @@ async function deliverProducts(referenceId) {
                         continue; // Skip processing this response
                     }
 
-                    if (data.statusCode === "00") {
+                    if (data.statusCode === "00" || data.Status === "22") {
                         deliveryStatus.refunded = true;
-                    } else if (data.statusCode === "99") {
+                    } else if (data.statusCode === "99" || data.Status === "11") {
                         deliveryStatus.refunded = false;
                     }
                 }

@@ -1,30 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Delivering</title>
-    <link rel="stylesheet" href="/stylesheets/build.css" />
-    <script
-      src="https://cdn.socket.io/4.8.1/socket.io.min.js"
-      integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
-      crossorigin="anonymous"
-    ></script>
-  </head>
-  <body>
-    <div class="w-full h-full flex flex-col justify-center items-center p-10">
-      <h1 class="text-3xl font-bold mb-5">Order Delivery Status</h1>
-      <% if (order) { %>
-        <h2>Delivering Order: <%= order.referenceId %></h2>
-        <p>Amount: RM <%= order.amount %></p>
-    <% } %>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delivering</title>
+  <link rel="stylesheet" href="/stylesheets/build.css" />
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"
+    integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="w-full h-full flex flex-col justify-center items-center p-10">
+    <h1 class="text-3xl font-bold mb-5">Order Delivery Status</h1>
+    <% if (order && success) { %>
+      <h2>Delivering Order: <%= order.referenceId %>
+      </h2>
+      <p>Amount: RM <%= order.amount %>
+      </p>
       <div class="text-lg" id="delivery-status">
-        <img
-          src="/images/package.gif"
-          alt="Delivery"
-          class="w-32 h-32 mb-5"
-          id="delivery-icon"
-        />
+        <img src="/images/package.gif" alt="Delivery" class="w-32 h-32 mb-5" id="delivery-icon" />
         <p id="delivering-text">
           Dispensing <span id="delivering-item"></span>
         </p>
@@ -33,49 +29,61 @@
         <p>Success: <span id="success-count"></span></p>
         <p>Failed: <span id="failed-count"></span></p>
       </div>
-      <button
-        onclick="window.location.href='/'"
-        class="mt-5 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 cursor-pointer disabled:bg-gray-300" disabled id="bth_btn">Back to Home</button>
-    </div>
-  </body>
+      <% } else if (!success) { %>
+        <h2 class="text-red-500 font-bold">Error</h2>
+        <p><%= message %></p>
+      <% } %>
+        <button onclick="window.location.href='/'"
+          class="mt-5 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 cursor-pointer disabled:bg-gray-300"
+          id="bth_btn" disabled>
+          Back to Home
+        </button>
 
-  <script type="text/javascript">
-    const socket = io();
+  </div>
+</body>
 
-    const totalItemsElement = document.getElementById("total-items");
-    const deliveredItemsElement = document.getElementById("delivered-items");
-    const successCountElement = document.getElementById("success-count");
-    const failedCountElement = document.getElementById("failed-count");
-    const deliveringItemElement = document.getElementById("delivering-item");
-    const deliveringTextElement = document.getElementById("delivering-text");
-    const deliveryIconElement = document.getElementById("delivery-icon");
-    const backToHomeButton = document.getElementById("bth_btn");
+<script type="text/javascript">
+  const socket = io();
 
-    socket.on("connect", function () {
-      console.log("Connected to server via Socket.io");
+  const totalItemsElement = document.getElementById("total-items");
+  const deliveredItemsElement = document.getElementById("delivered-items");
+  const successCountElement = document.getElementById("success-count");
+  const failedCountElement = document.getElementById("failed-count");
+  const deliveringItemElement = document.getElementById("delivering-item");
+  const deliveringTextElement = document.getElementById("delivering-text");
+  const deliveryIconElement = document.getElementById("delivery-icon");
+  const backToHomeButton = document.getElementById("bth_btn");
+
+  socket.on("connect", function () {
+    console.log("Connected to server via Socket.io");
+  });
+
+  if ("<%= success %>" === false) {
+    backToHomeButton.disabled = false;
+  }
+
+  if ("<%= order %>" && "<%= success %>" === true) {
+    socket.emit("joinOrderRoom", "<%= order.referenceId %>");
+
+    socket.emit("readyToDeliver", "<%= order.referenceId %>");
+
+    socket.on("deliveryStatus", (data) => {
+      console.log("Delivery Status Update:", data);
+      totalItemsElement.textContent = data.total;
+      deliveredItemsElement.textContent = data.itemDelivered;
+      successCountElement.textContent = data.successCount;
+      failedCountElement.textContent = data.itemDelivered - data.successCount;
+
+      if (data.itemDelivered < data.total) {
+        deliveringItemElement.textContent = `Item ${data.itemDelivered + 1}`;
+      } else {
+        deliveringTextElement.textContent = "All items dispensed.";
+        deliveringItemElement.textContent = "";
+        deliveryIconElement.src = "/images/verified.gif";
+        backToHomeButton.disabled = false;
+      }
     });
+  }
+</script>
 
-    if ("<%= order %>") {
-      socket.emit("joinOrderRoom", "<%= order.referenceId %>");
-
-      socket.emit("readyToDeliver", "<%= order.referenceId %>");
-
-      socket.on("deliveryStatus", (data) => {
-        console.log("Delivery Status Update:", data);
-        totalItemsElement.textContent = data.total;
-        deliveredItemsElement.textContent = data.itemDelivered;
-        successCountElement.textContent = data.successCount;
-        failedCountElement.textContent = data.itemDelivered - data.successCount;
-
-        if (data.itemDelivered < data.total) {
-          deliveringItemElement.textContent = `Item ${data.itemDelivered + 1}`;
-        } else {
-          deliveringTextElement.textContent = "All items dispensed.";
-          deliveringItemElement.textContent = "";
-          deliveryIconElement.src = "/images/verified.gif";
-          backToHomeButton.disabled = false;
-        }
-      });
-    }
-  </script>
 </html>

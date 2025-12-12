@@ -390,6 +390,9 @@ button, input:where([type='button'], [type='reset'], [type='submit']), ::file-se
 .text-gray-500 {
   color: var(--color-gray-500);
 }
+.text-red-500 {
+  color: var(--color-red-500);
+}
 .text-red-900 {
   color: var(--color-red-900);
 }
