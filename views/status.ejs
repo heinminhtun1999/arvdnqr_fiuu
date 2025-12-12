@@ -57,12 +57,12 @@
   socket.on("connect", function () {
     console.log("Connected to server via Socket.io");
   });
-
-  if ("<%= success %>" === false) {
+  console.log("<%= success %>", "<%= order %>");
+  if ("<%= success %>" == false) {
     backToHomeButton.disabled = false;
   }
 
-  if ("<%= order %>" && "<%= success %>" === true) {
+  if ("<%= order %>" && "<%= success %>" == true) {
     socket.emit("joinOrderRoom", "<%= order.referenceId %>");
 
     socket.emit("readyToDeliver", "<%= order.referenceId %>");
