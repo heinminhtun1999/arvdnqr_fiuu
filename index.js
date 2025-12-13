@@ -402,10 +402,10 @@ app.get("/online/return", (req, res) => {
 
     console.log("Return Data:", data);
 
-    if (data.statusCode == "00") {
+    if (data.status == "00") {
         updateOrderInJson(referenceId, "paymentCompleted", true);
         return res.redirect("/status?referenceId=" + referenceId);
-    } else if (data.statusCode == "11") {
+    } else if (data.status == "11") {
         updateOrderInJson(referenceId, "paymentCompleted", false);
         updateOrderInJson(referenceId, "active", false);
         return res.redirect("/status?success=false&message=Payment%20failed&referenceId=" + referenceId);
