@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("readyToDeliver", (referenceId) => {
-        // console.log(`Starting delivery for order: ${referenceId}`);
+        console.log(`Starting delivery for order: ${referenceId}`);
         deliverProducts(referenceId);
     });
 
@@ -585,7 +585,7 @@ async function deliverProducts(referenceId) {
 
     let itemLeft = order.totalQuantity;
     let successCount = 0;
-
+    console.log(`Starting delivery for order: ${referenceId}`);
     for (const item of order.items) {
 
         for (let i = 0; i < item.quantity; i++) {
