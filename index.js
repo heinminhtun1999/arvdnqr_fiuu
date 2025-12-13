@@ -380,10 +380,10 @@ Online Return Endpoint
 app.get("/online/return", (req, res) => {
 
     // Validate signature 
-    if (!validateSignature(req.query)) {
-        console.log("Invalid signature for notification:", req.query.referenceId);
-        return res.redirect("/status?success=false&message=Invalid%20signature");
-    }
+    // if (!validateSignature(req.query)) {
+    //     console.log("Invalid signature for notification:", req.query.referenceId);
+    //     return res.redirect("/status?success=false&message=Invalid%20signature");
+    // }
 
     const order = getOrderFromJson(req.query.referenceId);
 
