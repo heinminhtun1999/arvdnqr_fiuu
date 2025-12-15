@@ -631,13 +631,13 @@ async function deliverProducts(referenceId) {
                 timestamp: Date.now()
             }
 
-            console.log("Dstatus Request Body:", requestBody);
+            // console.log("Dstatus Request Body:", requestBody);
 
             try {
 
                 const url = order.platform === "arvdnqr" ? 
                 "https://argo.arvending.com.my/arvdnqrapi/dstatus/" : "https://fonlinedemo.onrender.com/dstatus";
-
+                console.log("Dstatus URL:", url);
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -662,7 +662,7 @@ async function deliverProducts(referenceId) {
                 }
 
                 // Log response for debugging
-                console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
+                // console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
 
                 // Update refund status in orders.json
                 item.deliveryStatus.push(deliveryStatus);
