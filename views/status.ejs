@@ -57,16 +57,16 @@
   socket.on("connect", function () {
     console.log("Connected to server via Socket.io");
   });
-  if ("<%= success %>" == false) {
+  if ("<%= !success %>") {
     backToHomeButton.disabled = false;
   }
 
   console.log("success", "<%= success %>" )
   console.log("order", "<%= order %>")
-  console.log("<%= order %>" && "<%= success %>" == true)
-  console.log("<%= order.referenceId %>" && "<%= success %>" == true)
+  console.log("<%= order %>" && "<%= success %>")
+  console.log("<%= order.referenceId %>" && "<%= success %>")
   console.log("order.referenceId", "<%= order.referenceId %>")
-  if ("<%= order.referenceId %>" && "<%= success %>" == true) {
+  if ("<%= order.referenceId %>" && "<%= success %>") {
     socket.emit("joinOrderRoom", "<%= order.referenceId %>");
 
     socket.emit("readyToDeliver", "<%= order.referenceId %>");
