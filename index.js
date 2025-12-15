@@ -631,10 +631,10 @@ async function deliverProducts(referenceId) {
                 timestamp: Date.now()
             }
 
-            console.log("Dstatus Request Body:", requestBody);
-
+            
             try {
-
+                
+                console.log("Dstatus Request Body:", requestBody);
                 const url = order.platform === "arvdnqr" ? 
                 "https://fonlinedemo.onrender.com/dstatus" : "https://fonlinedemo.onrender.com/dstatus";
                 
@@ -649,10 +649,10 @@ async function deliverProducts(referenceId) {
                 if (!success && data.data) {
 
                     // Validate signature
-                    if (!validateSignature(data.data)) {
-                        console.log("Invalid signature in refund response for order:", referenceId);
-                        continue; // Skip processing this response
-                    }
+                    // if (!validateSignature(data.data)) {
+                    //     console.log("Invalid signature in refund response for order:", referenceId);
+                    //     continue; // Skip processing this response
+                    // }
 
                     if (data.statusCode === "00" || data.Status === "22") {
                         deliveryStatus.refunded = true;
@@ -678,7 +678,7 @@ async function deliverProducts(referenceId) {
                 });
 
             } catch (e) {
-                console.log("ERROR", e.response ? e.response.data : e.message);
+                console.log("ERROR on refund request", e.response ? e.response.data : e.message);
             }
 
             const timeoutDuration = Math.floor(Math.random() * 10) + 5; // Random delay between 5 to 15 seconds
