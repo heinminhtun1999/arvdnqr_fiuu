@@ -31,13 +31,15 @@
       </div>
       <% } else if (!success) { %>
         <h2 class="text-red-500 font-bold">Error</h2>
-        <p><%= message %></p>
-      <% } %>
-        <button onclick="window.location.href='/'"
-          class="mt-5 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 cursor-pointer disabled:bg-gray-300"
-          id="bth_btn" disabled>
-          Back to Home
-        </button>
+        <p>
+          <%= message %>
+        </p>
+        <% } %>
+          <button onclick="window.location.href='/'"
+            class="mt-5 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 cursor-pointer disabled:bg-gray-300"
+            id="bth_btn" disabled>
+            Back to Home
+          </button>
 
   </div>
 </body>
@@ -61,11 +63,14 @@
     backToHomeButton.disabled = false;
   }
 
-  console.log("success", "<%= success %>" )
-  console.log("order", "<%= order %>")
-  console.log("<%= order %>" && "<%= success %>" == true)
-  console.log("order.referenceId", "<%= order.referenceId %>")
+
   if ("<%= order %>" && "<%= success %>" == true) {
+
+    console.log("success", "<%= success %>")
+    console.log("order", "<%= order %>")
+    console.log("<%= order %>" && "<%= success %>" == true)
+    console.log("order.referenceId", "<%= order.referenceId %>")
+
     socket.emit("joinOrderRoom", "<%= order.referenceId %>");
 
     socket.emit("readyToDeliver", "<%= order.referenceId %>");
