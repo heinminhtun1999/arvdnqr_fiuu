@@ -61,6 +61,10 @@
     backToHomeButton.disabled = false;
   }
 
+  console.log("success", "<%= success %>" )
+  console.log("order", "<%= order %>")
+  console.log("<%= order %>" && "<%= success %>" == true)
+  console.log("order.referenceId", "<%= order.referenceId %>")
   if ("<%= order %>" && "<%= success %>" == true) {
     socket.emit("joinOrderRoom", "<%= order.referenceId %>");
 
