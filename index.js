@@ -636,7 +636,7 @@ async function deliverProducts(referenceId) {
                 
                 console.log("Dstatus Request Body:", requestBody);
                 const url = order.platform === "arvdnqr" ? 
-                "https://fonlinedemo.onrender.com/dstatus" : "https://fonlinedemo.onrender.com/dstatus";
+                "https://argo.arvending.com.my/arvdnqrapi/dstatus/" : "https://fonlinedemo.onrender.com/dstatus";
                 
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
