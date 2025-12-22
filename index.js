@@ -21,7 +21,7 @@ Initialization and Configuration
 const PORT = process.env.PORT || 4000;
 const URLS = {
     arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
-    eShop2Online: "https://fonlinedemo.onrender.com/online",
+    eShop2Online: "https://argo.arvending.com.my/eshop2/online",
     eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
 }
 
@@ -327,7 +327,7 @@ app.get("/online", async (req, res) => {
     const callbackURL = currentURL + "/notification";
     const cancelURL = req.protocol + '://' + req.get('host');
 
-    let url = URLS["eShop2Online"] + "/"; // ARgo URL
+    let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
 
     const referenceId = createOrderID(data.machine_id);
 
