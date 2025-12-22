@@ -525,7 +525,7 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-
+    console.log("Hash String Key:", key);
     return crypto
         .createHmac("sha256", key)
         .update(hashString, "utf8")
