@@ -126,7 +126,7 @@ app.post("/offline", async (req, res) => {
     addOrderToJson(order);
 
     // Create signature for request body for ARgo QR
-    const hash = generateHash(body);
+    const hash = generateHash(body, getKey(data.payment_method));
     body["signature"] = hash;
     console.log("Request Body:", body);
     try {
@@ -191,7 +191,7 @@ app.post("/cancel", async (req, res) => {
         hashType: "hmac-sha256",
     }
 
-    const hash = generateHash(body);
+    const hash = generateHash(body, getKey(order.platform));
     body["signature"] = hash;
 
     console.log("Cancel Request Body:", body);
@@ -238,16 +238,17 @@ Notification Endpoint
 */
 app.post("/offline/notification", (req, res) => {
 
+    
+    const order = getOrderFromJson(req.body.referenceId);
+    
     // Validate signature - Disabled for testing purposes
-    if (!validateSignature(req.body)) {
+    if (!validateSignature(req.body, order.platform)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
         return res.status(400).json({
             success: false,
             message: "(40103) Invalid signature"
         });
     }
-
-    const order = getOrderFromJson(req.body.referenceId);
 
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
@@ -307,7 +308,7 @@ app.get("/status", (req, res) => {
         return res.render("status", { order: {}, success: success === false, message });
     }
 
-    return res.render("status", { order, success: true, message: "Payment successful"});
+    return res.render("status", { order, success: true, message: "Payment successful" });
 });
 
 /*
@@ -365,7 +366,7 @@ app.get("/online", async (req, res) => {
     addOrderToJson(order);
 
     // Create signature for request body for ARgo QR
-    const hash = generateHash(body);
+    const hash = generateHash(body, data.payment_method);
     body["signature"] = hash;
 
     const queryString = qs.stringify(body);
@@ -383,13 +384,14 @@ Online Return Endpoint
 */
 app.get("/online/return", (req, res) => {
 
+    
+    const order = getOrderFromJson(req.query.referenceId);
+    
     // Validate signature 
-    // if (!validateSignature(req.query)) {
+    // if (!validateSignature(req.query, order.platform)) {
     //     console.log("Invalid signature for notification:", req.query.referenceId);
     //     return res.redirect("/status?success=false&message=Invalid%20signature");
     // }
-
-    const order = getOrderFromJson(req.query.referenceId);
 
     if (!order) {
         console.log("Order not found for notification:", req.query.referenceId);
@@ -428,17 +430,18 @@ app.post("/online/notification", (req, res) => {
 
     const { error_code, error_desc } = req.body;
 
+
     
-     // Validate signature 
-    if (!validateSignature(req.body)) {
+    const order = getOrderFromJson(req.body.referenceId);
+    
+    // Validate signature 
+    if (!validateSignature(req.body, order.platform)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
         return res.status(400).json({
             success: false,
             message: "Invalid signature"
         });
     }
-
-    const order = getOrderFromJson(req.body.referenceId);
 
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
@@ -456,7 +459,7 @@ app.post("/online/notification", (req, res) => {
         });
     }
 
-    if (!order.isDelivering){
+    if (!order.isDelivering) {
         // Start delivery process if not already started
         deliverProducts(req.body.referenceId);
     }
@@ -498,8 +501,16 @@ function createOrderID(machine_id) {
     return text;
 }
 
+function getKey(payment_method) {
+    if (payment_method === "arvdnqr") {
+        return process.env.arvdnqrkey;
+    } else if (payment_method === "eShop2QR" || payment_method === "online") {
+        return process.env.eshop2offlinekey;
+    }
+}
+
 // Generate HMAC SHA256 hash
-function generateHash(data) {
+function generateHash(data, key) {
     // iPay88: Signature = HMAC_SHA512(key, MerchantCode + RefNo + Amount(without ".") + Currency)
     // Do NOT prepend the key into the data string; key goes only into createHmac.
 
@@ -517,15 +528,15 @@ function generateHash(data) {
     }
 
     return crypto
-        .createHmac("sha256", process.env.key)
+        .createHmac("sha256", key)
         .update(hashString, "utf8")
         .digest("hex");
 }
 
 // Validate Signature
-function validateSignature(data) {
+function validateSignature(data, payment_method) {
     const signature = data.signature;
-    const expectedHash = generateHash(data);
+    const expectedHash = generateHash(data, getKey(payment_method));
     return signature === expectedHash;
 }
 
@@ -620,7 +631,7 @@ async function deliverProducts(referenceId) {
                 "itemsToDispense": itemLeft.toString(),
                 "amount": item.price.toFixed(2)
             }
-            
+
             if (order.platform === "arvdnqr") {
                 requestBody["hashType"] = "hmac-sha256";
             }
@@ -635,12 +646,12 @@ async function deliverProducts(referenceId) {
                 timestamp: Date.now()
             }
 
-            
+
             try {
-                
+
                 console.log("Dstatus Request Body:", requestBody);
                 const url = URLS[order.platform] + "/dstatus";
-                
+
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
