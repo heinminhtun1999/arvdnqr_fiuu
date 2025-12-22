@@ -135,11 +135,21 @@
           <input
             type="radio"
             name="paymentMethod"
-            value="offline"
+            value="eShop2QR"
             checked
-            id="offline"
+            id="eShop2QR"
           />
-          <label for="offline">Duit Now</label>
+          <label for="eShop2QR">eShop2 Duit Now</label>
+        </div>
+        <div class="inline-block">
+          <input
+            type="radio"
+            name="paymentMethod"
+            value="arvdnqr"
+            checked
+            id="arvdnqr"
+          />
+          <label for="arvdnqr">Duit Now</label>
         </div>
       </div>
       <div>
@@ -172,7 +182,7 @@
           type="hidden"
           name="cartData"
           id="cartData"
-          value='{"machine_id": "testmachine2"}'
+          value='{"machine_id": "testmachine2", "payment_method": "arvdnqr"}'
         />
         <input
           type="submit"
@@ -200,12 +210,17 @@
 
     paymentMethodInputs.forEach((input) => {
       input.addEventListener("change", () => {
-        checkout_form.action = "/" + input.value;
         if (input.value == "online") {
           form.method = "GET";
+          checkout_form.action = "/online";
         } else {
           form.method = "POST";
+          checkout_form.action = "/offline";
         }
+        cartDataInput.value = JSON.stringify({
+          ...JSON.parse(cartDataInput.value || "{}"),
+          payment_method: input.value,
+        });
       });
     });
 

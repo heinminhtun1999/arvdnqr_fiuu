@@ -19,6 +19,11 @@ Initialization and Configuration
 */
 
 const PORT = process.env.PORT || 4000;
+const URLS = {
+    arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
+    eShop2Online: "https://fonlinedemo.onrender.com/online",
+    eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
+}
 
 const app = express();
 
@@ -82,13 +87,12 @@ app.post("/offline", async (req, res) => {
     const { cartData } = req.body;
 
     const data = JSON.parse(cartData);
-    console.log(data)
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     // let url = "https://opa.merchant.razer.com/RMS/API/MOLOPA/precreate.php";
     // let url = "https://api.arvending.com.my/arvdnqrapi/precreate"; // ARgo URL
-    let url = "https://argo.arvending.com.my/arvdnqrapi/precreate/"; // ARgo URL
-
+    let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
+    console.log("Using URL:", url);
     const referenceId = createOrderID(data.machine_id);
 
     // Create request body for ARgo QR
@@ -115,7 +119,7 @@ app.post("/offline", async (req, res) => {
         paymentCompleted: false,
         totalQuantity: totalQuantity,
         isDelivering: false,
-        platform: "arvdnqr"
+        platform: data.payment_method // Indicate platform
     }
 
     // Saving order to orders.json
@@ -178,7 +182,7 @@ app.post("/cancel", async (req, res) => {
     const referenceId = order.referenceId;
 
     // const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
-    const url = "https://argo.arvending.com.my/arvdnqrapi/reversal/";
+    const url = URLS[order.platform] + "/reversal";
 
     const body = {
         version: "v3",
@@ -322,7 +326,7 @@ app.get("/online", async (req, res) => {
     const callbackURL = currentURL + "/notification";
     const cancelURL = req.protocol + '://' + req.get('host');
 
-    let url = "https://fonlinedemo.onrender.com";
+    let url = URLS["eShop2Online"] + "/"; // ARgo URL
 
     const referenceId = createOrderID(data.machine_id);
 
@@ -635,8 +639,7 @@ async function deliverProducts(referenceId) {
             try {
                 
                 console.log("Dstatus Request Body:", requestBody);
-                const url = order.platform === "arvdnqr" ? 
-                "https://argo.arvending.com.my/arvdnqrapi/dstatus/" : "https://fonlinedemo.onrender.com/dstatus";
+                const url = URLS[order.platform] + "/dstatus";
                 
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
