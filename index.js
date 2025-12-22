@@ -205,7 +205,7 @@ app.post("/cancel", async (req, res) => {
 
         const data = response.data;
         console.log("Cancel Response Data:", data);
-        if (!validateSignature(data.response, order.platform)) {
+        if (!validateSignature(data.response, existingOrder.platform)) {
             console.log("Invalid signature for cancel response:", referenceId);
             return res.status(400).json({
                 success: false,
