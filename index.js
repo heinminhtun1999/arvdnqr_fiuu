@@ -190,7 +190,7 @@ app.post("/cancel", async (req, res) => {
         paymentReferenceId: referenceId,
         hashType: "hmac-sha256",
     }
-
+    console.log(order.platform, getKey(order.platform));
     const hash = generateHash(body, getKey(order.platform));
     body["signature"] = hash;
 
