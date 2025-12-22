@@ -91,7 +91,7 @@ app.post("/offline", async (req, res) => {
 
     // let url = "https://opa.merchant.razer.com/RMS/API/MOLOPA/precreate.php";
     // let url = "https://api.arvending.com.my/arvdnqrapi/precreate"; // ARgo URL
-    let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
+    let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
     console.log("Using URL:", url);
     const referenceId = createOrderID(data.machine_id);
 
