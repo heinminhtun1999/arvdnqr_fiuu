@@ -180,9 +180,9 @@ app.post("/cancel", async (req, res) => {
     }
 
     const referenceId = order.referenceId;
-
+    console.log(order)
     // const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
-    const url = URLS[order.platform] + "/reversal";
+    const url = URLS[order.platform] + "/reversal/";
 
     const body = {
         version: "v3",
