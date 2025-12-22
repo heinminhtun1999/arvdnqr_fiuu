@@ -140,7 +140,7 @@ app.post("/offline", async (req, res) => {
         const data = response.data;
         console.log("Response Data:", data);
 
-        if (!validateSignature(data.response)) {
+        if (!validateSignature(data.response, order.platform)) {
             console.log("Invalid signature for precreate:", referenceId);
             return res.status(400).json({
                 success: false,
@@ -206,7 +206,7 @@ app.post("/cancel", async (req, res) => {
 
         const data = response.data;
         console.log("Cancel Response Data:", data);
-        if (!validateSignature(data.response)) {
+        if (!validateSignature(data.response, order.platform)) {
             console.log("Invalid signature for cancel response:", referenceId);
             return res.status(400).json({
                 success: false,
