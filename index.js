@@ -180,7 +180,7 @@ app.post("/cancel", async (req, res) => {
     }
 
     const referenceId = order.referenceId;
-    console.log(order)
+    console.log("order", order)
     // const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
     const url = URLS[order.platform] + "/reversal/";
 
@@ -190,7 +190,7 @@ app.post("/cancel", async (req, res) => {
         paymentReferenceId: referenceId,
         hashType: "hmac-sha256",
     }
-    console.log(order.platform, getKey(order.platform));
+    console.log("platform:", order.platform, getKey(order.platform));
     const hash = generateHash(body, getKey(order.platform));
     body["signature"] = hash;
 
