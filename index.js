@@ -181,7 +181,7 @@ app.post("/cancel", async (req, res) => {
 
     const referenceId = order.referenceId;
     // const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
-    const url = URLS[order.platform] + "/reversal/";
+    const url = URLS[existingOrder.platform] + "/reversal/";
 
     const body = {
         version: "v3",
@@ -189,7 +189,7 @@ app.post("/cancel", async (req, res) => {
         paymentReferenceId: referenceId,
         hashType: "hmac-sha256",
     }
-    console.log("platform:", existingOrder.platform, getKey(existingOrder.platform));
+    
     const hash = generateHash(body, getKey(existingOrder.platform));
     body["signature"] = hash;
 
@@ -526,7 +526,7 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-    console.log("Hash String Key:", key);
+    
     return crypto
         .createHmac("sha256", key)
         .update(hashString, "utf8")
