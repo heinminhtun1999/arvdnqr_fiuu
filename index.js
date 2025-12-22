@@ -224,7 +224,8 @@ app.post("/cancel", async (req, res) => {
         // Need to implement signature validation for response here
 
     } catch (e) {
-        console.log("ERROR", e.response.data);
+        console.log("ERROR", e);
+        return res.status(500).json(e);
     }
 
     return res.redirect("/");
