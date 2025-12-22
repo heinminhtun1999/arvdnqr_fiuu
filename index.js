@@ -662,7 +662,7 @@ async function deliverProducts(referenceId) {
                 }
 
                 // Log response for debugging
-                // console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
+                console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
 
                 // Update refund status in orders.json
                 item.deliveryStatus.push(deliveryStatus);
