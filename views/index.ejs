@@ -1,358 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="/stylesheets/build.css" />
-  </head>
-  <body class="p-5">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="/stylesheets/build.css" />
+</head>
+
+<body class="p-5">
+  <div>
+    <h1 class="text-5xl font-extrabold text-red-900 text-center">ARVDN QR</h1>
+  </div>
+  <!-- Product Container -->
+  <div class="grid grid-cols-3 grid-rows-2 mt-10 gap-5 place-content-center place-items-center w-1/2 m-auto">
+    <!-- Item 1 -->
+    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
+      <img src="/images/chip.png" alt="chip" class="w-[150px] h-[150px]" />
+      <p>Chip</p>
+      <p>Price: RM 0.20</p>
+      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
+        data-item-id="1" data-item-name="chip" data-item-price="0.20">
+        Add
+      </button>
+    </div>
+    <!-- Item 2 -->
+    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
+      <img src="/images/chocolate.png" alt="chocolate" class="w-[150px] h-[150px]" />
+      <p>Chocolate</p>
+      <p>Price: RM 0.20</p>
+      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
+        data-item-id="2" data-item-name="chocolate" data-item-price="0.20">
+        Add
+      </button>
+    </div>
+    <!-- Item 3 -->
+    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
+      <img src="/images/cola.png" alt="cola" class="w-[150px] h-[150px]" />
+      <p>Cola</p>
+      <p>Price: RM 0.20</p>
+      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
+        data-item-id="3" data-item-name="cola" data-item-price="0.20">
+        Add
+      </button>
+    </div>
+    <!-- Item 4 -->
+    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
+      <img src="/images/lime.png" alt="lime" class="w-[150px] h-[150px]" />
+      <p>Lime</p>
+      <p>Price: RM 0.20</p>
+      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
+        data-item-id="4" data-item-name="lime" data-item-price="0.20">
+        Add
+      </button>
+    </div>
+    <!-- Item 5 -->
+    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
+      <img src="/images/noodle.png" alt="noodle" class="w-[150px] h-[150px]" />
+      <p>Noodle</p>
+      <p>Price: RM 0.20</p>
+      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
+        data-item-id="5" data-item-name="noodle" data-item-price="0.20">
+        Add
+      </button>
+    </div>
+    <!-- Item 6 -->
+    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
+      <img src="/images/soda.png" alt="soda" class="w-[150px] h-[150px]" />
+      <p>Soda</p>
+      <p>Price: RM 0.20</p>
+      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
+        data-item-id="6" data-item-name="soda" data-item-price="0.20">
+        Add
+      </button>
+    </div>
+  </div>
+  <!-- Cart Container -->
+  <div class="mt-10 p-5 flex justify-center flex-col items-center">
+    <h2 class="text-3xl font-bold text-center">Cart</h2>
+    <div id="cart" class="border-2 rounded-md p-5 w-1/2 m-auto mt-5">
+      <p class="text-center text-gray-500">Your cart is empty.</p>
+    </div>
+    <div class="mt-5">
+      <label class="mr-5 font-semibold">Select Payment Method:</label>
+      <div class="inline-block mr-3">
+        <input type="radio" name="paymentMethod" value="online" id="online" />
+        <label for="online">Online Banking/E-Wallet</label>
+      </div>
+      <div class="inline-block">
+        <input type="radio" name="paymentMethod" value="eShop2QR" checked id="eShop2QR" />
+        <label for="eShop2QR">eShop2 Duit Now</label>
+      </div>
+      <div class="inline-block">
+        <input type="radio" name="paymentMethod" value="arvdnqr" checked id="arvdnqr" />
+        <label for="arvdnqr">Duit Now</label>
+      </div>
+    </div>
     <div>
-      <h1 class="text-5xl font-extrabold text-red-900 text-center">ARVDN QR</h1>
+      <label class="mr-5 font-semibold">Machine ID:</label>
+      <input type="radio" name="machine_id" value="testmachine2" checked id="testmachine2" />
+      <label for="testmachine2">ARVDNQR Machine</label>
+      <input type="radio" name="machine_id" value="eshop2test" id="eshop2test" />
+      <label for="eshop2test">eShop2 Machine</label>
+      <input type="radio" name="machine_id" value="unregistered" id="unregistered" />
+      <label for="unregistered">Un-registered ID</label>
     </div>
-    <!-- Product Container -->
-    <div
-      class="grid grid-cols-3 grid-rows-2 mt-10 gap-5 place-content-center place-items-center w-1/2 m-auto"
-    >
-      <!-- Item 1 -->
-      <div
-        class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center"
-      >
-        <img src="/images/chip.png" alt="chip" class="w-[150px] h-[150px]" />
-        <p>Chip</p>
-        <p>Price: RM 0.20</p>
-        <button
-          class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-          data-item-id="1"
-          data-item-name="chip"
-          data-item-price="0.20"
-        >
-          Add
-        </button>
-      </div>
-      <!-- Item 2 -->
-      <div
-        class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center"
-      >
-        <img
-          src="/images/chocolate.png"
-          alt="chocolate"
-          class="w-[150px] h-[150px]"
-        />
-        <p>Chocolate</p>
-        <p>Price: RM 0.20</p>
-        <button
-          class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-          data-item-id="2"
-          data-item-name="chocolate"
-          data-item-price="0.20"
-        >
-          Add
-        </button>
-      </div>
-      <!-- Item 3 -->
-      <div
-        class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center"
-      >
-        <img src="/images/cola.png" alt="cola" class="w-[150px] h-[150px]" />
-        <p>Cola</p>
-        <p>Price: RM 0.20</p>
-        <button
-          class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-          data-item-id="3"
-          data-item-name="cola"
-          data-item-price="0.20"
-        >
-          Add
-        </button>
-      </div>
-      <!-- Item 4 -->
-      <div
-        class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center"
-      >
-        <img src="/images/lime.png" alt="lime" class="w-[150px] h-[150px]" />
-        <p>Lime</p>
-        <p>Price: RM 0.20</p>
-        <button
-          class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-          data-item-id="4"
-          data-item-name="lime"
-          data-item-price="0.20"
-        >
-          Add
-        </button>
-      </div>
-      <!-- Item 5 -->
-      <div
-        class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center"
-      >
-        <img
-          src="/images/noodle.png"
-          alt="noodle"
-          class="w-[150px] h-[150px]"
-        />
-        <p>Noodle</p>
-        <p>Price: RM 0.20</p>
-        <button
-          class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-          data-item-id="5"
-          data-item-name="noodle"
-          data-item-price="0.20"
-        >
-          Add
-        </button>
-      </div>
-      <!-- Item 6 -->
-      <div
-        class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center"
-      >
-        <img src="/images/soda.png" alt="soda" class="w-[150px] h-[150px]" />
-        <p>Soda</p>
-        <p>Price: RM 0.20</p>
-        <button
-          class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-          data-item-id="6"
-          data-item-name="soda"
-          data-item-price="0.20"
-        >
-          Add
-        </button>
-      </div>
-    </div>
-    <!-- Cart Container -->
-    <div class="mt-10 p-5 flex justify-center flex-col items-center">
-      <h2 class="text-3xl font-bold text-center">Cart</h2>
-      <div id="cart" class="border-2 rounded-md p-5 w-1/2 m-auto mt-5">
-        <p class="text-center text-gray-500">Your cart is empty.</p>
-      </div>
-      <div class="mt-5">
-        <label class="mr-5 font-semibold">Select Payment Method:</label>
-        <div class="inline-block mr-3">
-          <input type="radio" name="paymentMethod" value="online" id="online" />
-          <label for="online">Online Banking/E-Wallet</label>
-        </div>
-        <div class="inline-block">
-          <input
-            type="radio"
-            name="paymentMethod"
-            value="eShop2QR"
-            checked
-            id="eShop2QR"
-          />
-          <label for="eShop2QR">eShop2 Duit Now</label>
-        </div>
-        <div class="inline-block">
-          <input
-            type="radio"
-            name="paymentMethod"
-            value="arvdnqr"
-            checked
-            id="arvdnqr"
-          />
-          <label for="arvdnqr">Duit Now</label>
-        </div>
-      </div>
-      <div>
-        <label class="mr-5 font-semibold">Machine ID:</label>
-        <input
-          type="radio"
-          name="machine_id"
-          value="testmachine2"
-          checked
-          id="testmachine2"
-        />
-        <label for="testmachine2">ARVDNQR Machine</label>
-        <input
-          type="radio"
-          name="machine_id"
-          value="eshop2test"
-          id="eshop2test"
-        />
-        <label for="eshop2test">eShop2 Machine</label>
-        <input
-          type="radio"
-          name="machine_id"
-          value="unregistered"
-          id="unregistered"
-        />
-        <label for="unregistered">Un-registered ID</label>
-      </div>
-      <form method="POST" id="checkout_form" action="/offline">
-        <input
-          type="hidden"
-          name="cartData"
-          id="cartData"
-          value='{"machine_id": "testmachine2", "payment_method": "arvdnqr"}'
-        />
-        <input
-          type="submit"
-          value="Checkout"
-          class="mt-5 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-400 cursor-pointer"
-        />
-      </form>
-    </div>
-  </body>
+    <form method="POST" id="checkout_form" action="/offline">
+      <input type="hidden" name="cartData" id="cartData"
+        value='{"machine_id": "testmachine2", "payment_method": "arvdnqr"}' />
+      <input type="submit" value="Checkout"
+        class="mt-5 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-400 cursor-pointer" />
+    </form>
+  </div>
+</body>
 
-  <script>
-    const addBtns = document.querySelectorAll(".add-button");
-    const form = document.getElementById("checkout_form");
-    const paymentMethodInputs = document.querySelectorAll(
-      'input[name="paymentMethod"]'
-    );
-    const machineIdInputs = document.querySelectorAll(
-      'input[name="machine_id"]'
-    );
+<script>
+  const addBtns = document.querySelectorAll(".add-button");
+  const form = document.getElementById("checkout_form");
+  const paymentMethodInputs = document.querySelectorAll(
+    'input[name="paymentMethod"]'
+  );
+  const machineIdInputs = document.querySelectorAll(
+    'input[name="machine_id"]'
+  );
 
-    const cart = document.getElementById("cart");
-    const cartDataInput = document.getElementById("cartData");
+  const cart = document.getElementById("cart");
+  const cartDataInput = document.getElementById("cartData");
 
-    const cartItems = [];
+  const cartItems = [];
 
-    paymentMethodInputs.forEach((input) => {
-      input.addEventListener("change", () => {
-        if (input.value == "online") {
-          form.method = "GET";
-          checkout_form.action = "/online";
-        } else {
-          form.method = "POST";
-          checkout_form.action = "/offline";
-        }
-        cartDataInput.value = JSON.stringify({
-          ...JSON.parse(cartDataInput.value || "{}"),
-          payment_method: input.value,
-        });
-      });
-    });
-
-    machineIdInputs.forEach((input) => {
-      input.addEventListener("change", (e) => {
-        const selectedMachineId = e.target.value;
-        const originalCartData = JSON.parse(cartDataInput.value || "{}");
-        cartDataInput.value = JSON.stringify({
-          ...originalCartData,
-          machine_id: selectedMachineId,
-        });
-      });
-    });
-
-    form.addEventListener("submit", (e) => {
-      if (cartItems.length === 0) {
-        e.preventDefault();
-        alert("Your cart is empty. Please add items to the cart.");
+  paymentMethodInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      if (input.value == "online") {
+        form.method = "GET";
+        checkout_form.action = "/online";
+      } else {
+        form.method = "POST";
+        checkout_form.action = "/offline";
       }
-    });
+      cartDataInput.value = JSON.stringify({
+        ...JSON.parse(cartDataInput.value || "{}"),
+        payment_method: input.value,
+      });
 
-    // Add to cart button event listeners
-    addBtns.forEach((button) => {
-      button.addEventListener("click", () => {
-        const itemId = button.getAttribute("data-item-id");
-        const itemName = button.getAttribute("data-item-name");
-        const itemPrice = button.getAttribute("data-item-price");
-
-        let itemExists = false;
-        cartItems.forEach((item) => {
-          if (item.id === itemId) {
-            item.quantity += 1;
-            itemExists = true;
-            return;
+      if (input.value == "online" || input.value == "eShop2QR") {
+        machineIdInputs.forEach((radio) => {
+          if (radio.value == "eshop2test") {
+            radio.checked = true;
+            cartDataInput.value = JSON.stringify({
+              ...JSON.parse(cartDataInput.value || "{}"),
+              machine_id: "eshop2test",
+            });
           }
         });
-
-        if (!itemExists) {
-          cartItems.push({
-            id: itemId,
-            name: itemName,
-            price: parseFloat(itemPrice),
-            quantity: 1,
-          });
-        }
-        renderCart();
-
-        const originalCartData = JSON.parse(cartDataInput.value || "{}");
-        cartDataInput.value = JSON.stringify({
-          ...originalCartData,
-          cartItems: cartItems,
-          total: calculateTotal(),
+      } else {
+        machineIdInputs.forEach((radio) => {
+          if (radio.value == "testmachine2") {
+            radio.checked = true;
+            cartDataInput.value = JSON.stringify({
+              ...JSON.parse(cartDataInput.value || "{}"),
+              machine_id: "testmachine2",
+            });
+          }
         });
-      });
-    });
-
-    // Render cart items
-    function renderCart() {
-      const innerText = cart.querySelector("p");
-      if (cartItems.length === 0) {
-        innerText.textContent = "Your cart is empty.";
-        return;
       }
-      innerText.textContent = "";
 
+    });
+  });
+
+  machineIdInputs.forEach((input) => {
+    input.addEventListener("change", (e) => {
+      const selectedMachineId = e.target.value;
+      const originalCartData = JSON.parse(cartDataInput.value || "{}");
+      cartDataInput.value = JSON.stringify({
+        ...originalCartData,
+        machine_id: selectedMachineId,
+      });
+
+      if (input.value == "testmachine2") {
+        paymentMethodInputs.forEach((radio) => {
+          if (radio.value == "arvdnqr") {
+            radio.checked = true;
+            form.method = "POST";
+            checkout_form.action = "/offline";
+            cartDataInput.value = JSON.stringify({
+              ...JSON.parse(cartDataInput.value || "{}"),
+              payment_method: "arvdnqr",
+            });
+          }
+        });
+      } else if (input.value == "eshop2test") {
+        paymentMethodInputs.forEach((radio) => {
+          if (radio.value == "eShop2QR") {
+            radio.checked = true;
+            form.method = "POST";
+            checkout_form.action = "/offline";
+            cartDataInput.value = JSON.stringify({
+              ...JSON.parse(cartDataInput.value || "{}"),
+              payment_method: "eShop2QR",
+            });
+          }
+        });
+      }
+
+    });
+  });
+
+  form.addEventListener("submit", (e) => {
+    if (cartItems.length === 0) {
+      e.preventDefault();
+      alert("Your cart is empty. Please add items to the cart.");
+    }
+  });
+
+  // Add to cart button event listeners
+  addBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const itemId = button.getAttribute("data-item-id");
+      const itemName = button.getAttribute("data-item-name");
+      const itemPrice = button.getAttribute("data-item-price");
+
+      let itemExists = false;
       cartItems.forEach((item) => {
-        const existingItem = cart.querySelector(
-          `div[data-item-id="${item.id}"]`
-        );
-
-        if (existingItem) {
-          const itemPrice = existingItem.querySelector("#item-price");
-          const itemTotal = existingItem.querySelector("#item-total");
-          itemPrice.textContent = `RM ${item.price.toFixed(2)} x ${item.quantity}`;
-          itemTotal.textContent = `RM ${(item.price * item.quantity).toFixed(2)}`;
+        if (item.id === itemId) {
+          item.quantity += 1;
+          itemExists = true;
           return;
         }
+      });
 
-        const itemDiv = document.createElement("div");
+      if (!itemExists) {
+        cartItems.push({
+          id: itemId,
+          name: itemName,
+          price: parseFloat(itemPrice),
+          quantity: 1,
+        });
+      }
+      renderCart();
 
-        itemDiv.classList.add(
-          "w-full",
-          "flex",
-          "justify-between",
-          "items-center"
-        );
-        itemDiv.setAttribute("data-item-id", item.id);
+      const originalCartData = JSON.parse(cartDataInput.value || "{}");
+      cartDataInput.value = JSON.stringify({
+        ...originalCartData,
+        cartItems: cartItems,
+        total: calculateTotal(),
+      });
+    });
+  });
 
-        const text = `
+  // Render cart items
+  function renderCart() {
+    const innerText = cart.querySelector("p");
+    if (cartItems.length === 0) {
+      innerText.textContent = "Your cart is empty.";
+      return;
+    }
+    innerText.textContent = "";
+
+    cartItems.forEach((item) => {
+      const existingItem = cart.querySelector(
+        `div[data-item-id="${item.id}"]`
+      );
+
+      if (existingItem) {
+        const itemPrice = existingItem.querySelector("#item-price");
+        const itemTotal = existingItem.querySelector("#item-total");
+        itemPrice.textContent = `RM ${item.price.toFixed(2)} x ${item.quantity}`;
+        itemTotal.textContent = `RM ${(item.price * item.quantity).toFixed(2)}`;
+        return;
+      }
+
+      const itemDiv = document.createElement("div");
+
+      itemDiv.classList.add(
+        "w-full",
+        "flex",
+        "justify-between",
+        "items-center"
+      );
+      itemDiv.setAttribute("data-item-id", item.id);
+
+      const text = `
           <img src="/images/${item.name}.png" alt="${item.name}" class="w-[50px] h-[50px]" />
           <p>${item.name}</p>
           <p id="item-price">RM ${item.price.toFixed(2)} x ${item.quantity}</p>
           <p id="item-total">RM ${(item.price * item.quantity).toFixed(2)}</p>
         `;
 
-        itemDiv.classList.add("mb-2");
-        itemDiv.innerHTML = text;
-        innerText.appendChild(itemDiv);
-      });
+      itemDiv.classList.add("mb-2");
+      itemDiv.innerHTML = text;
+      innerText.appendChild(itemDiv);
+    });
 
-      renderTotal();
+    renderTotal();
+  }
+
+  // Render total price
+  function renderTotal() {
+    const totalDiv = document.getElementById("total-div");
+    if (totalDiv) {
+      totalDiv.remove();
     }
 
-    // Render total price
-    function renderTotal() {
-      const totalDiv = document.getElementById("total-div");
-      if (totalDiv) {
-        totalDiv.remove();
-      }
+    const div = document.createElement("div");
+    div.id = "total-div";
+    div.classList.add("mt-4", "text-right", "font-bold");
 
-      const div = document.createElement("div");
-      div.id = "total-div";
-      div.classList.add("mt-4", "text-right", "font-bold");
+    const total = calculateTotal();
 
-      const total = calculateTotal();
-
-      const text = `
+    const text = `
         <p>Total: RM ${total.toFixed(2)}</p>
       `;
 
-      div.innerHTML = text;
-      cart.appendChild(div);
-    }
+    div.innerHTML = text;
+    cart.appendChild(div);
+  }
 
-    // Calculate total
-    function calculateTotal() {
-      return cartItems.reduce((a, c) => {
-        if (typeof a === "number") {
-          return a + c.price.toFixed(2) * c.quantity;
-        }
-        a.price.toFixed(2) * a.quantity + c.price.toFixed(2) * c.quantity;
-      }, 0);
-    }
-  </script>
+  // Calculate total
+  function calculateTotal() {
+    return cartItems.reduce((a, c) => {
+      if (typeof a === "number") {
+        return a + c.price.toFixed(2) * c.quantity;
+      }
+      a.price.toFixed(2) * a.quantity + c.price.toFixed(2) * c.quantity;
+    }, 0);
+  }
+</script>
+
 </html>
