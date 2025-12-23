@@ -22,7 +22,8 @@ const PORT = process.env.PORT || 4000;
 const URLS = {
     arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
     // eShop2Online: "https://fonlinedemo.onrender.com",
-    eShop2Online: "https://argo.arvending.com.my/eshop2/online",
+    // eShop2Online: "https://argo.arvending.com.my/eshop2/online",
+    eShop2Online: "http://localhost:3000",
     eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
 }
 
@@ -190,7 +191,7 @@ app.post("/cancel", async (req, res) => {
         paymentReferenceId: referenceId,
         hashType: "hmac-sha256",
     }
-    
+
     const hash = generateHash(body, getKey(existingOrder.platform));
     body["signature"] = hash;
 
@@ -239,9 +240,9 @@ Notification Endpoint
 */
 app.post("/offline/notification", (req, res) => {
 
-    
+
     const order = getOrderFromJson(req.body.referenceId);
-    
+
     // Validate signature - Disabled for testing purposes
     if (!validateSignature(req.body, order.platform)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
@@ -367,12 +368,13 @@ app.get("/online", async (req, res) => {
     addOrderToJson(order);
 
     // Create signature for request body for ARgo QR
-    const hash = generateHash(body, data.payment_method);
+    const key = getKey(data.payment_method);
+    const hash = generateHash(body, key);
     body["signature"] = hash;
 
     const queryString = qs.stringify(body);
     const paymentURL = url + "?" + queryString;
-    console.log("Payment URL:", paymentURL);    
+    console.log("Payment URL:", paymentURL);
     await checkTimeout(180, referenceId); // Start timeout check (3 minutes)
     return res.redirect(paymentURL);
 });
@@ -385,9 +387,9 @@ Online Return Endpoint
 */
 app.get("/online/return", (req, res) => {
 
-    
+
     const order = getOrderFromJson(req.query.referenceId);
-    
+
     // Validate signature 
     // if (!validateSignature(req.query, order.platform)) {
     //     console.log("Invalid signature for notification:", req.query.referenceId);
@@ -432,9 +434,9 @@ app.post("/online/notification", (req, res) => {
     const { error_code, error_desc } = req.body;
 
 
-    
+
     const order = getOrderFromJson(req.body.referenceId);
-    
+
     // Validate signature 
     if (!validateSignature(req.body, order.platform)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
@@ -652,8 +654,8 @@ async function deliverProducts(referenceId) {
 
                 console.log("Dstatus Request Body:", requestBody);
                 const url = URLS[order.platform] + "/dstatus/";
-                
-                
+
+
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
