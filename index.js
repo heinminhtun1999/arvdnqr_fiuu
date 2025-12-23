@@ -632,7 +632,7 @@ async function deliverProducts(referenceId) {
                 "amount": item.price.toFixed(2)
             }
 
-            if (order.platform === "arvdnqr") {
+            if (order.platform === "arvdnqr" || order.platform === "eShop2QR") {
                 requestBody["hashType"] = "hmac-sha256";
             }
 
@@ -651,7 +651,7 @@ async function deliverProducts(referenceId) {
 
                 console.log("Dstatus Request Body:", requestBody);
                 const url = URLS[order.platform] + "/dstatus";
-
+                console.log("Using URL:", url);
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
