@@ -650,8 +650,9 @@ async function deliverProducts(referenceId) {
             try {
 
                 console.log("Dstatus Request Body:", requestBody);
-                const url = URLS[order.platform] + "/dstatus";
-                console.log("Using URL:", url);
+                const url = URLS[order.platform] + "/dstatus/";
+                
+                
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
