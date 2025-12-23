@@ -374,7 +374,7 @@ app.get("/online", async (req, res) => {
 
     const queryString = qs.stringify(body);
     const paymentURL = url + "?" + queryString;
-    console.log("Payment URL:", paymentURL);
+
     await checkTimeout(180, referenceId); // Start timeout check (3 minutes)
     return res.redirect(paymentURL);
 });
@@ -389,7 +389,7 @@ app.get("/online/return", (req, res) => {
 
 
     const order = getOrderFromJson(req.query.referenceId);
-
+    console.log("Online Return Query:", req.query);
     // Validate signature 
     if (!validateSignature(req.query, order.platform)) {
         console.log("Invalid signature for notification:", req.query.referenceId);
@@ -540,6 +540,7 @@ function generateHash(data, key) {
 function validateSignature(data, payment_method) {
     const signature = data.signature;
     const expectedHash = generateHash(data, getKey(payment_method));
+    console.log("Validating Signature:", { signature, expectedHash });
     return signature === expectedHash;
 }
 
