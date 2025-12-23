@@ -361,7 +361,7 @@ app.get("/online", async (req, res) => {
         paymentCompleted: false,
         totalQuantity: totalQuantity,
         isDelivering: false,
-        platform: "eshop2" // Indicate online platform
+        platform: "eShop2Online" // Indicate online platform
     }
 
     // Saving order to orders.json
@@ -507,7 +507,7 @@ function createOrderID(machine_id) {
 function getKey(payment_method) {
     if (payment_method === "arvdnqr") {
         return process.env.arvdnqrkey;
-    } else if (payment_method === "eShop2QR" || payment_method === "online") {
+    } else if (payment_method === "eShop2QR" || payment_method === "eShop2Online") {
         return process.env.eshop2offlinekey;
     }
 }

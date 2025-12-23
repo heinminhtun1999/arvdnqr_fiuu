@@ -84,8 +84,8 @@
     <div class="mt-5">
       <label class="mr-5 font-semibold">Select Payment Method:</label>
       <div class="inline-block mr-3">
-        <input type="radio" name="paymentMethod" value="online" id="online" />
-        <label for="online">Online Banking/E-Wallet</label>
+        <input type="radio" name="paymentMethod" value="eShop2Online" id="eShop2Online" />
+        <label for="eShop2Online">Online Banking/E-Wallet</label>
       </div>
       <div class="inline-block">
         <input type="radio" name="paymentMethod" value="eShop2QR" checked id="eShop2QR" />
@@ -131,7 +131,7 @@
 
   paymentMethodInputs.forEach((input) => {
     input.addEventListener("change", () => {
-      if (input.value == "online") {
+      if (input.value == "eShop2Online") {
         form.method = "GET";
         checkout_form.action = "/online";
       } else {
@@ -143,7 +143,7 @@
         payment_method: input.value,
       });
 
-      if (input.value == "online" || input.value == "eShop2QR") {
+      if (input.value == "eShop2Online" || input.value == "eShop2QR") {
         machineIdInputs.forEach((radio) => {
           if (radio.value == "eshop2test") {
             radio.checked = true;
