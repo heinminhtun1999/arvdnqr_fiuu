@@ -347,8 +347,7 @@ app.get("/online", async (req, res) => {
         cancelurl: cancelURL,
         waittime: "180",
         PaymentExpirationTime: new Date(Date.now() + 3 * 60 * 1000).toISOString(), // 3 minutes from now
-        metadata: JSON.stringify({ machine_id: "3213213" }),
-        guest_checkout: "0"
+        metadata: JSON.stringify({ machine_id: "3213213" })
     }
 
     // Create order object and add to activeOrders
