@@ -391,10 +391,10 @@ app.get("/online/return", (req, res) => {
     const order = getOrderFromJson(req.query.referenceId);
 
     // Validate signature 
-    // if (!validateSignature(req.query, order.platform)) {
-    //     console.log("Invalid signature for notification:", req.query.referenceId);
-    //     return res.redirect("/status?success=false&message=Invalid%20signature");
-    // }
+    if (!validateSignature(req.query, order.platform)) {
+        console.log("Invalid signature for notification:", req.query.referenceId);
+        return res.redirect("/status?success=false&message=Invalid%20signature");
+    }
 
     if (!order) {
         console.log("Order not found for notification:", req.query.referenceId);
@@ -667,10 +667,10 @@ async function deliverProducts(referenceId) {
                 if (!success && data.data) {
 
                     // Validate signature
-                    // if (!validateSignature(data.data)) {
-                    //     console.log("Invalid signature in refund response for order:", referenceId);
-                    //     continue; // Skip processing this response
-                    // }
+                    if (!validateSignature(data.data, order.platform)) {
+                        console.log("Invalid signature in refund response for order:", referenceId);
+                        continue; // Skip processing this response
+                    }
 
                     if (data.statusCode === "00" || data.Status === "22") {
                         deliveryStatus.refunded = true;
