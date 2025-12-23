@@ -636,7 +636,7 @@ async function deliverProducts(referenceId) {
                 requestBody["hashType"] = "hmac-sha256";
             }
 
-            const hash = generateHash(requestBody);
+            const hash = generateHash(requestBody, getKey(order.platform));
             requestBody["signature"] = hash;
 
             // For orders.json
