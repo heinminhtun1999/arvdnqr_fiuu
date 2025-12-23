@@ -371,7 +371,7 @@ app.get("/online", async (req, res) => {
 
     const queryString = qs.stringify(body);
     const paymentURL = url + "?" + queryString;
-
+    console.log("Payment URL:", paymentURL);    
     await checkTimeout(180, referenceId); // Start timeout check (3 minutes)
     return res.redirect(paymentURL);
 });
