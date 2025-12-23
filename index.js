@@ -339,7 +339,7 @@ app.get("/online", async (req, res) => {
         bill_name: "Clarie James",
         bill_email: "clariesjames@example.com",
         bill_mobile: "0123456789",
-        bill_desc: encodeURIComponent(JSON.stringify(data.cartItems)),
+        bill_desc: JSON.stringify(data.cartItems),
         currency: "MYR",
         returnurl: returnURL,
         callbackurl: callbackURL,
@@ -518,7 +518,7 @@ function generateHash(data, key) {
     let dataCopy = { ...data };
     delete dataCopy["signature"]; // Remove signature field if exists
 
-    dataCopy = Object.keys(dataCopy).sort((a, b) => a.localeCompare(b)).reduce((obj, key) => {
+    dataCopy = Object.keys(dataCopy).sort().reduce((obj, key) => {
         obj[key] = dataCopy[key];
         return obj;
     }, {});
@@ -527,7 +527,7 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-    
+    console.log("Hash String:", hashString);
     return crypto
         .createHmac("sha256", key)
         .update(hashString, "utf8")
