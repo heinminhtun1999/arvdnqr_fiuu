@@ -372,9 +372,14 @@ app.get("/online", async (req, res) => {
     body["signature"] = hash;
     console.log("Payment Request Body:", body);
     const queryString = qs.stringify(body);
-    const paymentURL = url + "?" + queryString;
+    let paymentURL = url + "?";
+
+    for (const [key, value] of Object.entries(body)) {
+        paymentURL += `${key}=${encodeURIComponent(value)}&`;
+    }
+
     console.log("Payment URL:", paymentURL);
-    await checkTimeout(180, referenceId); // Start timeout check (3 minutes)
+    checkTimeout(180, referenceId); // Start timeout check (3 minutes)
     return res.redirect(paymentURL);
 });
 
