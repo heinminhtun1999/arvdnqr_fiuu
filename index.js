@@ -370,10 +370,10 @@ app.get("/online", async (req, res) => {
     const key = getKey(data.payment_method);
     const hash = generateHash(body, key);
     body["signature"] = hash;
-
+    console.log("Payment Request Body:", body);
     const queryString = qs.stringify(body);
     const paymentURL = url + "?" + queryString;
-
+    console.log("Payment URL:", paymentURL);
     await checkTimeout(180, referenceId); // Start timeout check (3 minutes)
     return res.redirect(paymentURL);
 });
