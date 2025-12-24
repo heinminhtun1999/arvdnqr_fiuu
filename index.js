@@ -529,7 +529,7 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-    console.log("Hash String:", hashString);
+    console.log("Hash String:", hashString + "asd");
     return crypto
         .createHmac("sha256", key)
         .update(hashString, "utf8")
@@ -538,7 +538,6 @@ function generateHash(data, key) {
 
 // Validate Signature
 function validateSignature(data, payment_method) {
-    return false;
     const signature = data.signature;
     const expectedHash = generateHash(data, getKey(payment_method));
     console.log("Validating Signature:", { signature, expectedHash });
