@@ -367,7 +367,9 @@ app.get("/online", async (req, res) => {
     addOrderToJson(order);
 
     // Create signature for request body for ARgo QR
-    const hash = generateHash(body, getKey(data.payment_method));
+    const key = getKey(data.payment_method);
+    console.log("Using Key:", key);
+    const hash = generateHash(body, key);
     body["signature"] = hash;
     console.log("Payment Request Body:", body);
     const queryString = qs.stringify(body);
