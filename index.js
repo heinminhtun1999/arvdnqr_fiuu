@@ -21,8 +21,8 @@ Initialization and Configuration
 const PORT = process.env.PORT || 4000;
 const URLS = {
     arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
-    // eShop2Online: "https://fonlinedemo.onrender.com",
-    eShop2Online: "https://argo.arvending.com.my/eshop2/online",
+    eShop2Online: "https://fonlinedemo.onrender.com",
+    // eShop2Online: "https://argo.arvending.com.my/eshop2/online",
     // eShop2Online: "http://localhost:3000",
     eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
 }
@@ -367,8 +367,7 @@ app.get("/online", async (req, res) => {
     addOrderToJson(order);
 
     // Create signature for request body for ARgo QR
-    const key = getKey(data.payment_method);
-    const hash = generateHash(body, key);
+    const hash = generateHash(body, getKey(data.payment_method));
     body["signature"] = hash;
     console.log("Payment Request Body:", body);
     const queryString = qs.stringify(body);
