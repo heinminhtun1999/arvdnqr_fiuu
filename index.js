@@ -538,6 +538,7 @@ function generateHash(data, key) {
 
 // Validate Signature
 function validateSignature(data, payment_method) {
+    return false;
     const signature = data.signature;
     const expectedHash = generateHash(data, getKey(payment_method));
     console.log("Validating Signature:", { signature, expectedHash });
@@ -593,7 +594,7 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 }
 
 async function deliverProducts(referenceId) {
-    return; // Disable delivery simulation
+    
     // const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
 
     const order = getOrderFromJson(referenceId);
