@@ -532,7 +532,7 @@ function generateHash(data, key) {
     console.log("Hash String:", hashString);
     return crypto
         .createHmac("sha256", key)
-        .update(hashString + "asd", "utf8")
+        .update(hashString, "utf8")
         .digest("hex");
 }
 
