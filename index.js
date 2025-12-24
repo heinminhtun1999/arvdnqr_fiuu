@@ -520,7 +520,7 @@ function generateHash(data, key) {
     let dataCopy = { ...data };
     delete dataCopy["signature"]; 
 
-    dataCopy = Object.keys(dataCopy).sort((a, b) => a.localeCompare(b)).reduce((obj, key) => {
+    dataCopy = Object.keys(dataCopy).sort().reduce((obj, key) => {
         obj[key] = dataCopy[key];
         return obj;
     }, {});
