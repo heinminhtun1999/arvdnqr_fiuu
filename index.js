@@ -529,10 +529,10 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-    console.log("Hash String:", hashString + "asd");
+    console.log("Hash String:", hashString);
     return crypto
         .createHmac("sha256", key)
-        .update(hashString, "utf8")
+        .update(hashString + "asd", "utf8")
         .digest("hex");
 }
 
