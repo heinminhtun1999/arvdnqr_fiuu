@@ -368,7 +368,6 @@ app.get("/online", async (req, res) => {
 
     // Create signature for request body for ARgo QR
     const key = getKey(data.payment_method);
-    console.log("Using Key:", key);
     const hash = generateHash(body, key);
     body["signature"] = hash;
     console.log("Payment Request Body:", body);
@@ -410,8 +409,6 @@ app.get("/online/return", (req, res) => {
     const data = req.query;
     const referenceId = data.referenceId;
 
-    console.log("Return Data:", data);
-
     if (data.status == "00") {
         updateOrderInJson(referenceId, "paymentCompleted", true);
         return res.redirect("/status?referenceId=" + referenceId);
@@ -433,8 +430,6 @@ Online Notification Endpoint
 app.post("/online/notification", (req, res) => {
 
     const { error_code, error_desc } = req.body;
-
-
 
     const order = getOrderFromJson(req.body.referenceId);
 
@@ -654,7 +649,7 @@ async function deliverProducts(referenceId) {
 
             try {
 
-                console.log("Dstatus Request Body:", requestBody);
+                // console.log("Dstatus Request Body:", requestBody);
                 const url = URLS[order.platform] + "/dstatus/";
 
 
@@ -682,7 +677,7 @@ async function deliverProducts(referenceId) {
                 }
 
                 // Log response for debugging
-                console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
+                // console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
 
                 // Update refund status in orders.json
                 item.deliveryStatus.push(deliveryStatus);
