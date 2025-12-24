@@ -518,7 +518,7 @@ function generateHash(data, key) {
     // Do NOT prepend the key into the data string; key goes only into createHmac.
 
     let dataCopy = { ...data };
-    delete dataCopy["signature"]; // Remove signature field if exists
+    delete dataCopy["signature"]; 
 
     dataCopy = Object.keys(dataCopy).sort((a, b) => a.localeCompare(b)).reduce((obj, key) => {
         obj[key] = dataCopy[key];
@@ -593,7 +593,7 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 }
 
 async function deliverProducts(referenceId) {
-
+    return; // Disable delivery simulation
     // const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
 
     const order = getOrderFromJson(referenceId);
