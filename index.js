@@ -160,8 +160,8 @@ app.post("/offline", async (req, res) => {
         }
 
     } catch (e) {
-        console.log("ERROR", e);
-        return res.status(500).json(e);
+        console.log("ERROR", e.response ? e.response.data : e.message);
+        return res.status(500).json(e.response ? e.response.data : { message: e.message });
     }
 });
 
