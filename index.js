@@ -21,8 +21,8 @@ Initialization and Configuration
 const PORT = process.env.PORT || 4000;
 const URLS = {
     arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
-    eShop2Online: "https://fonlinedemo.onrender.com",
-    // eShop2Online: "https://argo.arvending.com.my/eshop2/online",
+    // eShop2Online: "https://fonlinedemo.onrender.com",
+    eShop2Online: "https://argo.arvending.com.my/eshop2/online",
     // eShop2Online: "http://localhost:3000",
     eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
 }
@@ -649,7 +649,7 @@ async function deliverProducts(referenceId) {
 
             try {
 
-                // console.log("Dstatus Request Body:", requestBody);
+                console.log("Dstatus Request Body:", requestBody);
                 const url = URLS[order.platform] + "/dstatus/";
 
 
