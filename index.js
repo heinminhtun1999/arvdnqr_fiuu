@@ -432,7 +432,7 @@ app.post("/online/notification", (req, res) => {
     const { error_code, error_desc } = req.body;
 
     const order = getOrderFromJson(req.body.referenceId);
-
+    console.log("Online Notification Body:", req.body);
     // Validate signature 
     if (!validateSignature(req.body, order.platform)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
@@ -589,7 +589,7 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 }
 
 async function deliverProducts(referenceId) {
-    
+    return
     // const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
 
     const order = getOrderFromJson(referenceId);
