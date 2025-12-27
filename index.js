@@ -589,7 +589,7 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 }
 
 async function deliverProducts(referenceId) {
-    
+    return
     // const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
 
     const order = getOrderFromJson(referenceId);
@@ -605,8 +605,7 @@ async function deliverProducts(referenceId) {
 
         for (let i = 0; i < item.quantity; i++) {
             // Simulate delivery process
-            // const success = Math.random() <= 0.7; // 70% chance of successful delivery
-            const success = false;
+            const success = Math.random() <= 0.7; // 70% chance of successful delivery
             if (success) {
                 successCount += 1;
             }
