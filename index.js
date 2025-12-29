@@ -426,8 +426,6 @@ Online Notification Endpoint
 */
 app.post("/online/notification", (req, res) => {
 
-    const { error_code, error_desc } = req.body;
-
     const order = getOrderFromJson(req.body.referenceId);
     console.log("Online Notification Body:", req.body);
     // Validate signature 
@@ -657,7 +655,7 @@ async function deliverProducts(referenceId) {
                 });
                 const data = response.data;
 
-                // console.log("Signature Valid:", validateSignature(data.data));
+                
                 if (!success && data.data) {
 
                     // Validate signature
@@ -674,7 +672,7 @@ async function deliverProducts(referenceId) {
                 }
 
                 // Log response for debugging
-                // console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
+                console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
 
                 // Update refund status in orders.json
                 item.deliveryStatus.push(deliveryStatus);
