@@ -91,15 +91,12 @@ app.post("/offline", async (req, res) => {
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-    // let url = "https://opa.merchant.razer.com/RMS/API/MOLOPA/precreate.php";
-    // let url = "https://api.arvending.com.my/arvdnqrapi/precreate"; // ARgo URL
     let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
-    console.log("Using URL:", url);
+    
     const referenceId = createOrderID(data.machine_id);
 
     // Create request body for ARgo QR
     const body = {
-        // applicationCode: process.env.appcode
         version: "v3",
         channelId: "24",
         storeId: "ARarvgo01",
