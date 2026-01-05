@@ -338,9 +338,9 @@ app.get("/online", async (req, res) => {
         bill_mobile: "17864110463",
         bill_desc: "银鹭八宝粥X1",
         currency: "MYR",
-        returnurl: "https://nweb.hnzczy.cn/itsweb/#/",
-        callbackurl: "https://hk.hnzczy.cn/ttbitsvend/argo/paymentAsynNotify",
-        cancelurl: "https://nweb.hnzczy.cn/itspc/",
+        returnurl: returnURL,
+        callbackurl: callbackURL,
+        cancelurl: cancelURL,
         waittime: "180",
         PaymentExpirationTime: new Date(Date.now() + 3 * 60 * 1000).toISOString(), // 3 minutes from now
         metadata: "",
