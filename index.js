@@ -343,7 +343,7 @@ app.get("/online", async (req, res) => {
         cancelurl: "https://nweb.hnzczy.cn/itspc/",
         waittime: "180",
         PaymentExpirationTime: new Date(Date.now() + 3 * 60 * 1000).toISOString(), // 3 minutes from now
-        metadata: JSON.stringify({ machine_id: data.machine_id }),
+        metadata: "",
         guest_checkout: "1"
     }
 
