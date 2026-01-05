@@ -331,20 +331,19 @@ app.get("/online", async (req, res) => {
 
     // Create request body for ARgo QR
     const body = {
-        amount: "3.00",
-        referenceId: "900098-202601051620040",
-        bill_name: "zhou",
-        bill_email: "1412099157@qq.com",
-        bill_mobile: "17864110463",
-        bill_desc: "银鹭八宝粥X1",
+        amount: data.total.toFixed(2),
+        referenceId: referenceId,
+        bill_name: "Clarie James",
+        bill_email: "clariesjames@example.com",
+        bill_mobile: "0123456789",
+        bill_desc: JSON.stringify(data.cartItems),
         currency: "MYR",
         returnurl: returnURL,
         callbackurl: callbackURL,
         cancelurl: cancelURL,
         waittime: "180",
         PaymentExpirationTime: new Date(Date.now() + 3 * 60 * 1000).toISOString(), // 3 minutes from now
-        metadata: "",
-        guest_checkout: "1"
+        metadata: JSON.stringify({ machine_id: data.machine_id })
     }
 
     // Create order object and add to activeOrders
