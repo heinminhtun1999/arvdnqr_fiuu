@@ -386,6 +386,7 @@ app.get("/online/return", (req, res) => {
 
     const order = getOrderFromJson(req.query.referenceId);
     console.log("Online Return Query:", req.query);
+    console.log("Online Return Body:", req.body);
     console.log("Order fetched:", order);
 
     return res.send("Return URL");
