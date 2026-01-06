@@ -20,8 +20,8 @@ Initialization and Configuration
 const PORT = process.env.PORT || 4000;
 const URLS = {
     arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
-    // eShop2Online: "https://fonlinedemo.onrender.com",
-    eShop2Online: "https://argo.arvending.com.my/eshop2/online",
+    eShop2Online: "https://fonlinedemo.onrender.com",
+    // eShop2Online: "https://argo.arvending.com.my/eshop2/online",
     // eShop2Online: "http://localhost:3000",
     eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
 }
@@ -338,9 +338,9 @@ app.get("/online", async (req, res) => {
         bill_mobile: "0123456789",
         bill_desc: JSON.stringify(data.cartItems),
         currency: "MYR",
-        returnurl: "https://www.google.com",
-        callbackurl: "https://www.google.com",
-        cancelurl: "https://www.google.com",
+        returnurl: returnURL,
+        callbackurl: callbackURL,
+        cancelurl: cancelURL,
         waittime: "180",
         PaymentExpirationTime: new Date(Date.now() + 3 * 60 * 1000).toISOString(), // 3 minutes from now
         metadata: JSON.stringify({ machine_id: data.machine_id })
