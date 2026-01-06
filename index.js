@@ -431,37 +431,37 @@ app.post("/online/notification", (req, res) => {
 
     const order = getOrderFromJson(req.body.referenceId);
     console.log("Online Notification Body:", req.body);
-    // Validate signature 
-    if (!validateSignature(req.body, order.platform)) {
-        console.log("Invalid signature for notification:", req.body.referenceId);
-        return res.status(400).json({
-            success: false,
-            message: "Invalid signature"
-        });
-    }
+    // // Validate signature 
+    // if (!validateSignature(req.body, order.platform)) {
+    //     console.log("Invalid signature for notification:", req.body.referenceId);
+    //     return res.status(400).json({
+    //         success: false,
+    //         message: "Invalid signature"
+    //     });
+    // }
 
-    if (!order) {
-        console.log("Order not found for notification:", req.body.referenceId);
-        return res.status(404).json({
-            success: false,
-            message: "Order not found"
-        });
-    }
+    // if (!order) {
+    //     console.log("Order not found for notification:", req.body.referenceId);
+    //     return res.status(404).json({
+    //         success: false,
+    //         message: "Order not found"
+    //     });
+    // }
 
-    if (!order.active) {
-        console.log("Order is expired", req.body.referenceId);
-        return res.status(400).json({
-            success: false,
-            message: "Order is expired"
-        });
-    }
+    // if (!order.active) {
+    //     console.log("Order is expired", req.body.referenceId);
+    //     return res.status(400).json({
+    //         success: false,
+    //         message: "Order is expired"
+    //     });
+    // }
 
-    if (!order.isDelivering) {
-        // Start delivery process if not already started
-        deliverProducts(req.body.referenceId);
-    }
+    // if (!order.isDelivering) {
+    //     // Start delivery process if not already started
+    //     deliverProducts(req.body.referenceId);
+    // }
 
-    const data = req.body;
+    // const data = req.body;
 
     return res.send({ success: true, message: "RECEIVEDOK" });
 });
