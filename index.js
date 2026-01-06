@@ -338,13 +338,12 @@ app.get("/online", async (req, res) => {
         bill_mobile: "0123456789",
         bill_desc: JSON.stringify(data.cartItems),
         currency: "MYR",
-        returnurl: returnURL,
-        callbackurl: callbackURL,
-        cancelurl: cancelURL,
+        returnurl: "https://www.google.com",
+        callbackurl: "https://www.google.com",
+        cancelurl: "https://www.google.com",
         waittime: "180",
         PaymentExpirationTime: new Date(Date.now() + 3 * 60 * 1000).toISOString(), // 3 minutes from now
-        metadata: JSON.stringify({ machine_id: data.machine_id }),
-        guest_checkout: "1",
+        metadata: JSON.stringify({ machine_id: data.machine_id })
     }
 
     // Create order object and add to activeOrders
