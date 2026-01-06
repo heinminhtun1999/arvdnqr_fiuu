@@ -386,6 +386,9 @@ app.get("/online/return", (req, res) => {
 
     const order = getOrderFromJson(req.query.referenceId);
     console.log("Online Return Query:", req.query);
+    console.log("Order fetched:", order);
+
+    return res.send("Return URL");
     // Validate signature 
     if (!validateSignature(req.query, order.platform)) {
         console.log("Invalid signature for notification:", req.query.referenceId);
