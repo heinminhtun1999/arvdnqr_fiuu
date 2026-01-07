@@ -323,7 +323,7 @@ app.get("/online", async (req, res) => {
     const currentURL = req.protocol + '://' + req.get('host') + "/online";
     const returnURL = currentURL + "/return";
     const callbackURL = currentURL + "/notification";
-    const cancelURL = req.protocol + '://' + req.get('host');
+    const cancelURL = currentURL + "/cancel";
 
     let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
 
