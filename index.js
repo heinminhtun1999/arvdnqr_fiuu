@@ -235,8 +235,8 @@ Notification Endpoint
 =====================
 */
 app.post("/offline/notification", (req, res) => {
-
-
+    console.log("Notification Body:", req.body);
+    return res.send({ success: true, message: "RECEIVEDOK" });
     const order = getOrderFromJson(req.body.referenceId);
 
     // Validate signature - Disabled for testing purposes
