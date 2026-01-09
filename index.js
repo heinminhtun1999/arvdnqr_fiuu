@@ -235,7 +235,7 @@ Notification Endpoint
 =====================
 */
 app.post("/offline/notification", (req, res) => {
-    
+
     const order = getOrderFromJson(req.body.referenceId);
 
     // Validate signature - Disabled for testing purposes
@@ -585,7 +585,7 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 }
 
 async function deliverProducts(referenceId) {
-    return;
+    
     // const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
 
     const order = getOrderFromJson(referenceId);
