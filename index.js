@@ -79,6 +79,18 @@ if (!fs.existsSync(orderJsonFilePath)) {
 // })()
 
 
+app.get("/", (req, res) => {
+    console.log(req.query);
+    console.log(req.body);
+    const data = req.query;
+
+    if (data) {
+        return res.status(200).json(data);
+    } else {
+        return res.status(400).json({ message: "No data provided" });
+    }
+})
+
 /*
 =================
 Offline Checkout Endpoint
