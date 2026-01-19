@@ -27,9 +27,9 @@ const PORT = process.env.PORT || 4000;
 // }
 
 const URLS = {
-    arvdnqr: "https://staging.arvending.com.my/arvdnqrapi",
-    eShop2Online: "https://staging.arvending.com.my/online",
-    eShop2QR: "https://staging.arvending.com.my/offline"
+    arvdnqr: "https://betapi.arvending.com.my/arvdnqrapi",
+    eShop2Online: "https://betapi.arvending.com.my/online",
+    eShop2QR: "https://betapi.arvending.com.my/offline"
 }
 
 const app = express();
