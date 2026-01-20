@@ -26,11 +26,11 @@ const PORT = process.env.PORT || 4000;
 //     eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
 // }
 
-// const URLS = {
-//     arvdnqr: "https://betapi.arvending.com.my/arvdnqrapi",
-//     eShop2Online: "https://betapi.arvending.com.my/online",
-//     eShop2QR: "https://betapi.arvending.com.my/offline"
-// }
+const URLS = {
+    arvdnqr: "https://betapi.arvending.com.my/arvdnqrapi",
+    eShop2Online: "https://betapi.arvending.com.my/online",
+    eShop2QR: "https://betapi.arvending.com.my/offline"
+}
 
 const app = express();
 
@@ -108,7 +108,8 @@ app.post("/offline", async (req, res) => {
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-    let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
+    // let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
+    let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
     
     const referenceId = createOrderID(data.machine_id);
 
@@ -197,7 +198,8 @@ app.post("/cancel", async (req, res) => {
 
     const referenceId = order.referenceId;
     // const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
-    const url = URLS[existingOrder.platform] + "/reversal/";
+    // const url = URLS[existingOrder.platform] + "/reversal/";
+    const url = URLS[existingOrder.platform] + "/reversal";
 
     const body = {
         version: "v3",
@@ -342,7 +344,8 @@ app.get("/online", async (req, res) => {
     const callbackURL = currentURL + "/notification";
     const cancelURL = currentURL + "/cancel";
 
-    let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
+    // let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
+    let url = URLS["eShop2Online"] + "/payment"; // ARgo URL
 
     const referenceId = createOrderID(data.machine_id);
 
@@ -664,7 +667,8 @@ async function deliverProducts(referenceId) {
             try {
 
                 console.log("Dstatus Request Body:", requestBody);
-                const url = URLS[order.platform] + "/dstatus/";
+                // const url = URLS[order.platform] + "/dstatus/";
+                const url = URLS[order.platform] + "/dstatus";
 
 
                 const response = await axios.post(url, qs.stringify(requestBody), {
