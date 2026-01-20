@@ -345,7 +345,7 @@ app.get("/online", async (req, res) => {
     const cancelURL = currentURL + "/cancel";
 
     // let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
-    let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
+    let url = URLS["eShop2Online"] + "/payment"; // ARgo URL
 
     const referenceId = createOrderID(data.machine_id);
 
