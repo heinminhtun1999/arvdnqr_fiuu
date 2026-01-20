@@ -670,7 +670,6 @@ async function deliverProducts(referenceId) {
                 // const url = URLS[order.platform] + "/dstatus/";
                 const url = URLS[order.platform] + "/dstatus";
 
-
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -678,7 +677,6 @@ async function deliverProducts(referenceId) {
                 });
                 const data = response.data;
 
-                
                 if (!success && data.data) {
 
                     // Validate signature
