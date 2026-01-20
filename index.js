@@ -28,8 +28,8 @@ const PORT = process.env.PORT || 4000;
 
 const URLS = {
     arvdnqr: "https://betapi.arvending.com.my/arvdnqrapi",
-    eShop2Online: "https://betapi.arvending.com.my/online",
-    eShop2QR: "https://betapi.arvending.com.my/offline"
+    eShop2Online: "https://betapi.arvending.com.my/eshop2/online",
+    eShop2QR: "https://betapi.arvending.com.my/eshop2/offline"
 }
 
 const app = express();
