@@ -108,8 +108,8 @@ app.post("/offline", async (req, res) => {
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-    // let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
-    let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
+    let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
+    // let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
     
     const referenceId = createOrderID(data.machine_id);
 
@@ -198,8 +198,8 @@ app.post("/cancel", async (req, res) => {
 
     const referenceId = order.referenceId;
     // const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
-    // const url = URLS[existingOrder.platform] + "/reversal/";
-    const url = URLS[existingOrder.platform] + "/reversal";
+    const url = URLS[existingOrder.platform] + "/reversal/";
+    // const url = URLS[existingOrder.platform] + "/reversal";
 
     const body = {
         version: "v3",
@@ -606,8 +606,6 @@ function updateOrderInJson(referenceId, updateField, updateValue) {
 }
 
 async function deliverProducts(referenceId) {
-    
-    // const url = "https://api.arvending.com.my/arvdnqrapi/dstatus";
 
     const order = getOrderFromJson(referenceId);
 
@@ -667,8 +665,8 @@ async function deliverProducts(referenceId) {
             try {
 
                 console.log("Dstatus Request Body:", requestBody);
-                // const url = URLS[order.platform] + "/dstatus/";
-                const url = URLS[order.platform] + "/dstatus";
+                const url = URLS[order.platform] + "/dstatus/";
+                // const url = URLS[order.platform] + "/dstatus";
 
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
