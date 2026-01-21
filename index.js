@@ -18,19 +18,19 @@ Initialization and Configuration
 */
 
 const PORT = process.env.PORT || 4000;
-const URLS = {
-    arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
-    // eShop2Online: "https://fonlinedemo.onrender.com",
-    eShop2Online: "https://argo.arvending.com.my/eshop2/online",
-    // eShop2Online: "http://localhost:3000",
-    eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
-}
-
 // const URLS = {
-//     arvdnqr: "https://betapi.arvending.com.my/arvdnqrapi",
-//     eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
-//     eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline"
+//     arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
+//     // eShop2Online: "https://fonlinedemo.onrender.com",
+//     eShop2Online: "https://argo.arvending.com.my/eshop2/online",
+//     // eShop2Online: "http://localhost:3000",
+//     eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
 // }
+
+const URLS = {
+    arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
+    eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
+    eShop2QR: "https://argo.arvending.com.my/beta/eshop2/eshop2/offline"
+}
 
 const app = express();
 
