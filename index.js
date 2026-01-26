@@ -620,10 +620,12 @@ async function deliverProducts(referenceId) {
 
         for (let i = 0; i < item.quantity; i++) {
             // Simulate delivery process
-            const success = Math.random() <= 0.7; // 70% chance of successful delivery
-            if (success) {
-                successCount += 1;
-            }
+            // const success = Math.random() <= 0.7; // 70% chance of successful delivery
+            // if (success) {
+            //     successCount += 1;
+            // }
+
+            const success = true; // For testing purposes, assume all deliveries are successful
 
             itemLeft -= 1; // Decrease the count of items left to deliver
 
