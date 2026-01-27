@@ -626,6 +626,7 @@ async function deliverProducts(referenceId) {
             // }
 
             const success = true; // For testing purposes, assume all deliveries are successful
+            successCount += 1;
 
             itemLeft -= 1; // Decrease the count of items left to deliver
 
