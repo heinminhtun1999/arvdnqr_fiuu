@@ -344,8 +344,8 @@ app.get("/online", async (req, res) => {
     const callbackURL = currentURL + "/notification";
     const cancelURL = currentURL + "/cancel";
 
-    // let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
-    let url = URLS["eShop2Online"] + "/payment"; // ARgo URL
+    let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
+    // let url = URLS["eShop2Online"] + "/payment"; // ARgo URL
 
     const referenceId = createOrderID(data.machine_id);
 
@@ -668,8 +668,8 @@ async function deliverProducts(referenceId) {
             try {
 
                 console.log("Dstatus Request Body:", requestBody);
-                // const url = URLS[order.platform] + "/dstatus/";
-                const url = URLS[order.platform] + "/dstatus";
+                const url = URLS[order.platform] + "/dstatus/";
+                // const url = URLS[order.platform] + "/dstatus";
 
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
