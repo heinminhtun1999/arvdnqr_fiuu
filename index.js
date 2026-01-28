@@ -108,8 +108,8 @@ app.post("/offline", async (req, res) => {
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-    // let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
-    let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
+    let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
+    // let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
     
     const referenceId = createOrderID(data.machine_id);
 
@@ -197,8 +197,8 @@ app.post("/cancel", async (req, res) => {
     }
 
     const referenceId = order.referenceId;
-    // const url = URLS[existingOrder.platform] + "/reversal/";
-    const url = URLS[existingOrder.platform] + "/reversal";
+    const url = URLS[existingOrder.platform] + "/reversal/";
+    // const url = URLS[existingOrder.platform] + "/reversal";
 
     const body = {
         version: "v3",
