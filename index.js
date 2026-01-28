@@ -29,7 +29,7 @@ const URLS = {
 // const URLS = {
 //     arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
 //     eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
-//     eShop2QR: "https://argo.arvending.com.my/beta/eshop2/eshop2/offline"
+//     eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline"
 // }
 
 const app = express();
