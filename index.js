@@ -197,8 +197,8 @@ app.post("/cancel", async (req, res) => {
     }
 
     const referenceId = order.referenceId;
-    const url = URLS[existingOrder.platform] + "/reversal/";
-    // const url = URLS[existingOrder.platform] + "/reversal";
+    // const url = URLS[existingOrder.platform] + "/reversal/";
+    const url = URLS[existingOrder.platform] + "/reversal";
 
     const body = {
         version: "v3",
