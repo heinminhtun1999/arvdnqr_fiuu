@@ -18,19 +18,19 @@ Initialization and Configuration
 */
 
 const PORT = process.env.PORT || 4000;
-const URLS = {
-    arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
-    // eShop2Online: "https://fonlinedemo.onrender.com",
-    eShop2Online: "https://argo.arvending.com.my/eshop2/online",
-    // eShop2Online: "http://localhost:3000",
-    eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
-}
-
 // const URLS = {
-//     arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
-//     eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
-//     eShop2QR: "https://argo.arvending.com.my/beta/eshop2/eshop2/offline"
+//     arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
+//     // eShop2Online: "https://fonlinedemo.onrender.com",
+//     eShop2Online: "https://argo.arvending.com.my/eshop2/online",
+//     // eShop2Online: "http://localhost:3000",
+//     eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
 // }
+
+const URLS = {
+    arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
+    eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
+    eShop2QR: "https://argo.arvending.com.my/beta/eshop2/eshop2/offline"
+}
 
 const app = express();
 
@@ -108,8 +108,8 @@ app.post("/offline", async (req, res) => {
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-    let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
-    // let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
+    // let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
+    let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
     
     const referenceId = createOrderID(data.machine_id);
 
@@ -197,9 +197,8 @@ app.post("/cancel", async (req, res) => {
     }
 
     const referenceId = order.referenceId;
-    // const url = "https://api.arvending.com.my/arvdnqrapi/reversal";
-    const url = URLS[existingOrder.platform] + "/reversal/";
-    // const url = URLS[existingOrder.platform] + "/reversal";
+    // const url = URLS[existingOrder.platform] + "/reversal/";
+    const url = URLS[existingOrder.platform] + "/reversal";
 
     const body = {
         version: "v3",
@@ -668,8 +667,8 @@ async function deliverProducts(referenceId) {
             try {
 
                 console.log("Dstatus Request Body:", requestBody);
-                const url = URLS[order.platform] + "/dstatus/";
-                // const url = URLS[order.platform] + "/dstatus";
+                // const url = URLS[order.platform] + "/dstatus/";
+                const url = URLS[order.platform] + "/dstatus";
 
                 const response = await axios.post(url, qs.stringify(requestBody), {
                     headers: {
