@@ -735,6 +735,8 @@ async function deliverProducts(referenceId) {
         try {
             console.log("JP Refund Request Body:", jpFailDeliStatus);
             const url = URLS[order.platform] + "/dstatus/";
+            const hash = generateHash(jpFailDeliStatus, getKey(order.machineId));
+            jpFailDeliStatus["signature"] = hash;
             const response = await axios.post(url, qs.stringify(jpFailDeliStatus), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
