@@ -613,12 +613,12 @@ async function deliverProducts(referenceId) {
     let itemLeft = order.totalQuantity;
     let successCount = 0;
     const jpFailDeliStatus = {
-        referenceId: referenceId,
-        orderId: referenceId,
-        statusCode: "99",
-        itemDesc: "",
-        itemsToDispense: "",
-        amount: 0.00,
+        "referenceId": referenceId,
+        "orderId": referenceId,
+        "statusCode": "99",
+        "itemDesc": "",
+        "itemsToDispense": "",
+        "amount": 0.00,
     };
     console.log(`Starting delivery for order: ${referenceId}`);
     for (const item of order.items) {
@@ -733,10 +733,10 @@ async function deliverProducts(referenceId) {
 
     if (order.machineId === "eshop2testjp" && jpFailDeliStatus.amount > 0) {
         try {
-            console.log("JP Refund Request Body:", jpFailDeliStatus);
             const url = URLS[order.platform] + "/dstatus/";
             const hash = generateHash(jpFailDeliStatus, getKey(order.machineId));
             jpFailDeliStatus["signature"] = hash;
+            console.log("JP Refund Request Body: ", jpFailDeliStatus);
             const response = await axios.post(url, qs.stringify(jpFailDeliStatus), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
