@@ -9,6 +9,7 @@ const fs = require("fs");
 const cors = require("cors");
 const qs = require("qs");
 const { ref } = require("process");
+const { machine } = require("os");
 
 dotenv.config();
 
@@ -368,7 +369,8 @@ app.get("/online", async (req, res) => {
         paymentCompleted: false,
         totalQuantity: totalQuantity,
         isDelivering: false,
-        platform: "eShop2Online" // Indicate online platform
+        platform: "eShop2Online", // Indicate online platform
+        machineId: data.machine_id
     }
 
     // Saving order to orders.json
@@ -545,6 +547,7 @@ function generateHash(data, key) {
 
 // Validate Signature
 function validateSignature(data, machineId) {
+    console.log("Validate Signature: ", machineId);
     const signature = data.signature;
     const expectedHash = generateHash(data, getKey(machineId));
     console.log("Validating Signature:", { signature, expectedHash });
