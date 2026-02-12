@@ -616,7 +616,7 @@ async function deliverProducts(referenceId) {
         referenceId: referenceId,
         orderId: referenceId,
         statusCode: "99",
-        itemDesc: "Delivery Failed",
+        itemDesc: "",
         itemsToDispense: "",
         amount: 0.00,
     };
