@@ -18,19 +18,7 @@ Initialization and Configuration
 */
 
 const PORT = process.env.PORT || 4000;
-const URLS = {
-    arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
-    // eShop2Online: "https://fonlinedemo.onrender.com",
-    eShop2Online: "https://argo.arvending.com.my/eshop2/online",
-    // eShop2Online: "http://localhost:3000",
-    eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
-}
-
-// const URLS = {
-//     arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
-//     eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
-//     eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline"
-// }
+let URLS = {};
 
 const app = express();
 
@@ -42,10 +30,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: "*" })); // Enable CORS for all origins
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-
-app.get("/", (req, res) => {
-    res.render("index");
-});
 
 // --- Socket.io connection handler ---
 io.on("connection", (socket) => {
@@ -84,17 +68,24 @@ if (!fs.existsSync(orderJsonFilePath)) {
 //     // fs.unlinkSync(orderJsonFilePath);
 // })()
 
+app.get("/testing", (req, res) => {
+    URLS = {
+        arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
+        eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
+        eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline"
+    }
+    res.render("index");
+});
 
 app.get("/", (req, res) => {
-    console.log(req.query);
-    console.log(req.body);
-    const data = req.query;
-
-    if (data) {
-        return res.status(200).json(data);
-    } else {
-        return res.status(400).json({ message: "No data provided" });
+    URLS = {
+        arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
+        // eShop2Online: "https://fonlinedemo.onrender.com",
+        eShop2Online: "https://argo.arvending.com.my/eshop2/online",
+        // eShop2Online: "http://localhost:3000",
+        eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
     }
+    res.render("index");
 })
 
 /*
@@ -110,7 +101,7 @@ app.post("/offline", async (req, res) => {
 
     let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
     // let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
-    
+
     const referenceId = createOrderID(data.machine_id);
 
     // Create request body for ARgo QR
@@ -531,7 +522,7 @@ function generateHash(data, key) {
     // Do NOT prepend the key into the data string; key goes only into createHmac.
 
     let dataCopy = { ...data };
-    delete dataCopy["signature"]; 
+    delete dataCopy["signature"];
 
     dataCopy = Object.keys(dataCopy).sort((a, b) => a.localeCompare(b)).reduce((obj, key) => {
         obj[key] = dataCopy[key];
@@ -620,13 +611,13 @@ async function deliverProducts(referenceId) {
 
         for (let i = 0; i < item.quantity; i++) {
             // Simulate delivery process
-            // const success = Math.random() <= 0.7; // 70% chance of successful delivery
-            // if (success) {
-            //     successCount += 1;
-            // }
+            const success = Math.random() <= 0.7; // 70% chance of successful delivery
+            if (success) {
+                successCount += 1;
+            }
 
-            const success = true; // For testing purposes, assume all deliveries are successful
-            successCount += 1;
+            // const success = true; // For testing purposes, assume all deliveries are successful
+            // successCount += 1;
 
             itemLeft -= 1; // Decrease the count of items left to deliver
 
