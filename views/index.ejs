@@ -146,15 +146,34 @@
       });
 
       if (input.value == "eShop2Online" || input.value == "eShop2QR") {
+        // Check if any eShop2 machine is already selected
+        let eshop2Selected = false;
+        let selectedEshop2Machine = "";
+        
         machineIdInputs.forEach((radio) => {
-          if (radio.value == "eshop2test") {
-            radio.checked = true;
-            cartDataInput.value = JSON.stringify({
-              ...JSON.parse(cartDataInput.value || "{}"),
-              machine_id: "eshop2test",
-            });
+          if ((radio.value == "eshop2testjp" || radio.value == "eshop2test") && radio.checked) {
+            eshop2Selected = true;
+            selectedEshop2Machine = radio.value;
           }
         });
+
+        // If an eShop2 machine is already selected, keep it; otherwise default to eshop2test
+        if (eshop2Selected) {
+          cartDataInput.value = JSON.stringify({
+            ...JSON.parse(cartDataInput.value || "{}"),
+            machine_id: selectedEshop2Machine,
+          });
+        } else {
+          machineIdInputs.forEach((radio) => {
+            if (radio.value == "eshop2test") {
+              radio.checked = true;
+              cartDataInput.value = JSON.stringify({
+                ...JSON.parse(cartDataInput.value || "{}"),
+                machine_id: "eshop2test",
+              });
+            }
+          });
+        }
       } else {
         machineIdInputs.forEach((radio) => {
           if (radio.value == "testmachine2") {
