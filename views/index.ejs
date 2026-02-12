@@ -102,6 +102,8 @@
       <label for="testmachine2">ARVDNQR Machine</label>
       <input type="radio" name="machine_id" value="eshop2test" id="eshop2test" />
       <label for="eshop2test">eShop2 Machine</label>
+      <input type="radio" name="machine_id" value="eshop2testjp" id="eshop2testjp" />
+      <label for="eshop2testjp">eShop2 JingPin Machine</label>
       <input type="radio" name="machine_id" value="unregistered" id="unregistered" />
       <label for="unregistered">Un-registered ID</label>
     </div>
@@ -189,7 +191,7 @@
             });
           }
         });
-      } else if (input.value == "eshop2test") {
+      } else if (input.value == "eshop2test" || input.value == "eshop2testjp") {
         paymentMethodInputs.forEach((radio) => {
           if (radio.value == "eShop2QR") {
             radio.checked = true;

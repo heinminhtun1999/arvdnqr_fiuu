@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const fs = require("fs");
 const cors = require("cors");
 const qs = require("qs");
+const { ref } = require("process");
 
 dotenv.config();
 
@@ -97,11 +98,10 @@ app.post("/offline", async (req, res) => {
     const { cartData } = req.body;
 
     const data = JSON.parse(cartData);
-    const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);;
 
     let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
     // let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
-
     const referenceId = createOrderID(data.machine_id);
 
     // Create request body for ARgo QR
@@ -127,14 +127,15 @@ app.post("/offline", async (req, res) => {
         paymentCompleted: false,
         totalQuantity: totalQuantity,
         isDelivering: false,
-        platform: data.payment_method // Indicate platform
+        platform: data.payment_method, // Indicate platform
+        machineId: data.machine_id
     }
 
     // Saving order to orders.json
     addOrderToJson(order);
 
     // Create signature for request body for ARgo QR
-    const hash = generateHash(body, getKey(data.payment_method));
+    const hash = generateHash(body, getKey(data.machine_id));
     body["signature"] = hash;
     console.log("Request Body:", body);
     try {
@@ -148,7 +149,7 @@ app.post("/offline", async (req, res) => {
         const data = response.data;
         console.log("Response Data:", data);
 
-        if (!validateSignature(data.response, order.platform)) {
+        if (!validateSignature(data.response, order.machineId)) {
             console.log("Invalid signature for precreate:", referenceId);
             return res.status(400).json({
                 success: false,
@@ -199,7 +200,7 @@ app.post("/cancel", async (req, res) => {
         hashType: "hmac-sha256",
     }
 
-    const hash = generateHash(body, getKey(existingOrder.platform));
+    const hash = generateHash(body, getKey(existingOrder.machineId));
     body["signature"] = hash;
 
     console.log("Cancel Request Body:", body);
@@ -214,7 +215,7 @@ app.post("/cancel", async (req, res) => {
 
         const data = response.data;
         console.log("Cancel Response Data:", data);
-        if (!validateSignature(data.response, existingOrder.platform)) {
+        if (!validateSignature(data.response, existingOrder.machineId)) {
             console.log("Invalid signature for cancel response:", referenceId);
             return res.status(400).json({
                 success: false,
@@ -250,7 +251,7 @@ app.post("/offline/notification", (req, res) => {
     const order = getOrderFromJson(req.body.referenceId);
 
     // Validate signature - Disabled for testing purposes
-    if (!validateSignature(req.body, order.platform)) {
+    if (!validateSignature(req.body, order.machineId)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
         return res.status(400).json({
             success: false,
@@ -374,7 +375,7 @@ app.get("/online", async (req, res) => {
     addOrderToJson(order);
 
     // Create signature for request body for ARgo QR
-    const key = getKey(data.payment_method);
+    const key = getKey(data.machine_id);
     const hash = generateHash(body, key);
     body["signature"] = hash;
     console.log("Payment Request Body:", body);
@@ -401,7 +402,7 @@ app.get("/online/return", (req, res) => {
     console.log("Order fetched:", order);
 
     // Validate signature 
-    if (!validateSignature(req.query, order.platform)) {
+    if (!validateSignature(req.query, order.machineId)) {
         console.log("Invalid signature for notification:", req.query.referenceId);
         return res.redirect("/status?success=false&message=Invalid%20signature");
     }
@@ -442,7 +443,7 @@ app.post("/online/notification", (req, res) => {
     const order = getOrderFromJson(req.body.referenceId);
     console.log("Online Notification Body:", req.body);
     // Validate signature 
-    if (!validateSignature(req.body, order.platform)) {
+    if (!validateSignature(req.body, order.machineId)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
         return res.status(400).json({
             success: false,
@@ -508,11 +509,13 @@ function createOrderID(machine_id) {
     return text;
 }
 
-function getKey(payment_method) {
-    if (payment_method === "arvdnqr") {
+function getKey(machineId) {
+    if (machineId === "testmachine2") {
         return process.env.arvdnqrkey;
-    } else if (payment_method === "eShop2QR" || payment_method === "eShop2Online") {
+    } else if (machineId === "eshop2test") {
         return process.env.eshop2offlinekey;
+    } else if (machineId === "eshop2testjp") {
+        return process.env.jpkey;
     }
 }
 
@@ -541,9 +544,9 @@ function generateHash(data, key) {
 }
 
 // Validate Signature
-function validateSignature(data, payment_method) {
+function validateSignature(data, machineId) {
     const signature = data.signature;
-    const expectedHash = generateHash(data, getKey(payment_method));
+    const expectedHash = generateHash(data, getKey(machineId));
     console.log("Validating Signature:", { signature, expectedHash });
     return signature === expectedHash;
 }
@@ -606,6 +609,14 @@ async function deliverProducts(referenceId) {
 
     let itemLeft = order.totalQuantity;
     let successCount = 0;
+    const jpFailDeliStatus = {
+        referenceId: referenceId,
+        orderId: referenceId,
+        statusCode: "99",
+        itemDesc: "Delivery Failed",
+        itemsToDispense: "",
+        amount: 0.00,
+    };
     console.log(`Starting delivery for order: ${referenceId}`);
     for (const item of order.items) {
 
@@ -629,63 +640,70 @@ async function deliverProducts(referenceId) {
                 "alisNumber": item.id
             }
 
-            const machine_id = order.referenceId.split("-")[0];
-            const orderId = createOrderID(machine_id) + "-" + item.id;
-
-            const requestBody = {
-                "referenceId": referenceId,
-                "orderId": orderId,
-                "statusCode": success ? "00" : "99",
-                "itemDesc": JSON.stringify(requestItemDetail),
-                "itemsToDispense": itemLeft.toString(),
-                "amount": item.price.toFixed(2)
-            }
-
-            if (order.platform === "arvdnqr" || order.platform === "eShop2QR") {
-                requestBody["hashType"] = "hmac-sha256";
-            }
-
-            const hash = generateHash(requestBody, getKey(order.platform));
-            requestBody["signature"] = hash;
-
-            // For orders.json
-            const deliveryStatus = {
-                orderId: orderId,
-                deliverySuccess: success,
-                timestamp: Date.now()
-            }
-
-
             try {
 
-                console.log("Dstatus Request Body:", requestBody);
-                const url = URLS[order.platform] + "/dstatus/";
-                // const url = URLS[order.platform] + "/dstatus";
+                const machine_id = order.machineId;
+                const orderId = createOrderID(machine_id) + "-" + item.id;
 
-                const response = await axios.post(url, qs.stringify(requestBody), {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                });
-                const data = response.data;
-
-                if (!success && data.data) {
-
-                    // Validate signature
-                    if (!validateSignature(data.data, order.platform)) {
-                        console.log("Invalid signature in refund response for order:", referenceId);
-                        continue; // Skip processing this response
-                    }
-
-                    if (data.statusCode === "00" || data.Status === "22") {
-                        deliveryStatus.refunded = true;
-                    } else if (data.statusCode === "99" || data.Status === "11") {
-                        deliveryStatus.refunded = false;
-                    }
+                // For orders.json
+                const deliveryStatus = {
+                    orderId: orderId,
+                    deliverySuccess: success,
+                    timestamp: Date.now()
                 }
 
-                // Log response for debugging
-                console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
+                // Check if the machine is not JingPin, if not send Dstatus request for each item
+                if (machine_id !== "eshop2testjp") {
+
+                    const requestBody = {
+                        "referenceId": referenceId,
+                        "orderId": orderId,
+                        "statusCode": success ? "00" : "99",
+                        "itemDesc": JSON.stringify(requestItemDetail),
+                        "itemsToDispense": itemLeft.toString(),
+                        "amount": item.price.toFixed(2)
+                    }
+
+                    if (order.platform === "arvdnqr" || order.platform === "eShop2QR") {
+                        requestBody["hashType"] = "hmac-sha256";
+                    }
+
+                    const hash = generateHash(requestBody, getKey(order.machineId));
+                    requestBody["signature"] = hash;
+
+                    console.log("Dstatus Request Body:", requestBody);
+                    const url = URLS[order.platform] + "/dstatus/";
+                    // const url = URLS[order.platform] + "/dstatus";
+
+                    const response = await axios.post(url, qs.stringify(requestBody), {
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    });
+                    const data = response.data;
+
+                    if (!success && data.data) {
+
+                        // Validate signature
+                        if (!validateSignature(data.data, order.platform)) {
+                            console.log("Invalid signature in refund response for order:", referenceId);
+                            continue; // Skip processing this response
+                        }
+
+                        if (data.statusCode === "00" || data.Status === "22") {
+                            deliveryStatus.refunded = true;
+                        } else if (data.statusCode === "99" || data.Status === "11") {
+                            deliveryStatus.refunded = false;
+                        }
+                    }
+
+                    // Log response for debugging
+                    console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
+                } else {
+                    if (!success) {
+                        jpFailDeliStatus.amount += item.price;
+                    }
+                }
 
                 // Update refund status in orders.json
                 item.deliveryStatus.push(deliveryStatus);
@@ -710,6 +728,31 @@ async function deliverProducts(referenceId) {
 
     }
 
-    updateOrderInJson(referenceId, "isDelivering", false);
-    updateOrderInJson(referenceId, "active", false);
+    if (order.machineId === "eshop2testjp" && jpFailDeliStatus.amount > 0) {
+        try {
+            console.log("JP Refund Request Body:", jpFailDeliStatus);
+            const url = URLS[order.platform] + "/dstatus/";
+            const response = await axios.post(url, qs.stringify(jpFailDeliStatus), {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+            const data = response.data;
+            console.log("JP Refund Response Data:", data);
+
+            if (data.data) {
+                // Validate signature
+                if (!validateSignature(data.data, order.platform)) {
+                    console.log("Invalid signature in JP refund response for order:", referenceId);
+                    return;
+                }
+            }
+
+        } catch (e) {
+            console.log("ERROR on JP refund request", e.response ? e.response.data : e.message);
+        }
+
+        updateOrderInJson(referenceId, "isDelivering", false);
+        updateOrderInJson(referenceId, "active", false);
+    }
 }
