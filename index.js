@@ -685,7 +685,7 @@ async function deliverProducts(referenceId) {
                     if (!success && data.data) {
 
                         // Validate signature
-                        if (!validateSignature(data.data, order.platform)) {
+                        if (!validateSignature(data.data, order.machineId)) {
                             console.log("Invalid signature in refund response for order:", referenceId);
                             continue; // Skip processing this response
                         }
