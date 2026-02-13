@@ -489,6 +489,23 @@ app.get("/online/cancel", (req, res) => {
 });
 
 /*
+=================
+iPay88 Payment Gateway Integration
+=================
+*/
+
+app.get("/ipay88/response", (req, res) => {
+    const data = req.query
+    res.status(200).json({ message: "iPay88 Response Received", data });
+});
+
+app.post("/ipay88/backend", (req, res) => {
+    const data = req.body
+    console.log("iPay88 Backend Notification:", data);
+    res.status(200).json({ message: "iPay88 Notification Received", data });
+});
+
+/*
 ================
 Start the Server
 ================
