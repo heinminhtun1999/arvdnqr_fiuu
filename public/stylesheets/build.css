@@ -230,6 +230,9 @@ button, input:where([type='button'], [type='reset'], [type='submit']), ::file-se
 .mb-5 {
   margin-bottom: calc(var(--spacing) * 5);
 }
+.ml-2 {
+  margin-left: calc(var(--spacing) * 2);
+}
 .block {
   display: block;
 }

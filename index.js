@@ -96,13 +96,12 @@ Offline Checkout Endpoint
 =================
 */
 app.post("/offline", async (req, res) => {
-    const { cartData } = req.body;
-
+    const { cartData, no_dstatus } = req.body;
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);;
 
     let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
-    // let url = URLS[data.payment_method] + "/precreate"; // ARgo URL
+
     const referenceId = createOrderID(data.machine_id);
 
     // Create request body for ARgo QR
@@ -129,7 +128,8 @@ app.post("/offline", async (req, res) => {
         totalQuantity: totalQuantity,
         isDelivering: false,
         platform: data.payment_method, // Indicate platform
-        machineId: data.machine_id
+        machineId: data.machine_id,
+        no_dstatus: no_dstatus === "on" ? true : false
     }
 
     // Saving order to orders.json
@@ -191,7 +191,6 @@ app.post("/cancel", async (req, res) => {
 
     const referenceId = order.referenceId;
     const url = URLS[existingOrder.platform] + "/reversal/";
-    // const url = URLS[existingOrder.platform] + "/reversal";
 
     console.log("URL: ", url);
     const body = {
@@ -327,7 +326,7 @@ Online Checkout Endpoint
 =================
 */
 app.get("/online", async (req, res) => {
-    const { cartData } = req.query;
+    const { cartData, no_dstatus } = req.query;
 
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -338,7 +337,6 @@ app.get("/online", async (req, res) => {
     const cancelURL = currentURL + "/cancel";
 
     let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
-    // let url = URLS["eShop2Online"] + "/payment"; // ARgo URL
 
     const referenceId = createOrderID(data.machine_id);
 
@@ -370,7 +368,8 @@ app.get("/online", async (req, res) => {
         totalQuantity: totalQuantity,
         isDelivering: false,
         platform: "eShop2Online", // Indicate online platform
-        machineId: data.machine_id
+        machineId: data.machine_id,
+        no_dstatus: no_dstatus === "on" ? true : false
     }
 
     // Saving order to orders.json
@@ -623,7 +622,7 @@ async function deliverProducts(referenceId) {
 
     const order = getOrderFromJson(referenceId);
 
-    if (order.isDelivering) return; // Prevent multiple delivery processes
+    if (order.isDelivering || order.no_dstatus) return; // Prevent multiple delivery processes
 
     updateOrderInJson(referenceId, "isDelivering", true);
 
@@ -693,7 +692,6 @@ async function deliverProducts(referenceId) {
 
                     console.log("Dstatus Request Body:", requestBody);
                     const url = URLS[order.platform] + "/dstatus/";
-                    // const url = URLS[order.platform] + "/dstatus";
 
                     const response = await axios.post(url, qs.stringify(requestBody), {
                         headers: {
