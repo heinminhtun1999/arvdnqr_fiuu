@@ -20,6 +20,7 @@ Initialization and Configuration
 */
 
 const PORT = process.env.PORT || 4000;
+let isTesting = false;
 let URLS = {};
 
 const app = express();
@@ -71,6 +72,7 @@ if (!fs.existsSync(orderJsonFilePath)) {
 // })()
 
 app.get("/testing", (req, res) => {
+    isTesting = true;
     URLS = {
         arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
         eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
@@ -87,6 +89,7 @@ app.get("/", (req, res) => {
         // eShop2Online: "http://localhost:3000",
         eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
     }
+    isTesting = false;
     res.render("index");
 })
 
@@ -129,7 +132,8 @@ app.post("/offline", async (req, res) => {
         isDelivering: false,
         platform: data.payment_method, // Indicate platform
         machineId: data.machine_id,
-        no_dstatus: no_dstatus === "on" ? true : false
+        no_dstatus: no_dstatus === "on" ? true : false,
+        isTesting: isTesting
     }
 
     // Saving order to orders.json
@@ -369,7 +373,8 @@ app.get("/online", async (req, res) => {
         isDelivering: false,
         platform: "eShop2Online", // Indicate online platform
         machineId: data.machine_id,
-        no_dstatus: no_dstatus === "on" ? true : false
+        no_dstatus: no_dstatus === "on" ? true : false,
+        isTesting: isTesting
     }
 
     // Saving order to orders.json
@@ -423,7 +428,7 @@ app.get("/online/return", (req, res) => {
 
     if (data.status == "00") {
         updateOrderInJson(referenceId, "paymentCompleted", true);
-        return res.redirect("/status?referenceId=" + referenceId);
+        return res.redirect("/status?referenceId=" + referenceId + "&success=true");
     } else if (data.status == "11") {
         updateOrderInJson(referenceId, "paymentCompleted", false);
         updateOrderInJson(referenceId, "active", false);
@@ -733,7 +738,8 @@ async function deliverProducts(referenceId) {
                     itemDelivered: order.totalQuantity - itemLeft,
                     deliverySuccess: success,
                     successCount: successCount,
-                    isRefunded: deliveryStatus.refunded
+                    isRefunded: deliveryStatus.refunded,
+                    isTesting: order.isTesting
                 });
 
             } catch (e) {

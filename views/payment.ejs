@@ -86,7 +86,7 @@
       else if (msg.status == true && msg.message == "Payment successful") {
         // console.log(msg.referenceId, "<%= data.referenceId %>");
         alert("Payment successful! You will be redirected to the homepage.");
-        window.location.href = "/status?referenceId=<%= data.referenceId %>";
+        window.location.href = "/status?referenceId=<%= data.referenceId %>&success=true";
       }
     });
 
