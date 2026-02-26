@@ -57,7 +57,7 @@
   socket.on("connect", function () {
     console.log("Connected to server via Socket.io");
   });
-  if ("<%= !success %>") {
+  if ("<%= success %>" == "false" ) {
     backToHomeButton.disabled = false;
   }
 
