@@ -321,7 +321,7 @@ app.get("/status", (req, res) => {
     if (!success && message) {
         return res.render("status", { order: {}, success: success === false, message, isTesting: order.isTesting });
     }
-
+    console.log("Order fetched for status page:", order);
     return res.render("status", { order, success: true, message: "Payment successful", isTesting: order.isTesting });
 });
 
