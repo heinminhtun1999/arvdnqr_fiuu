@@ -316,6 +316,7 @@ app.get("/status", (req, res) => {
     const order = getOrderFromJson(referenceId);
 
     const { success, message } = req.query;
+    console.log("Status Query:", req.query);
 
     if (success && message) {
         return res.render("status", { order: {}, success: success === false, message });
