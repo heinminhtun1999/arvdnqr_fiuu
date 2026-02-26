@@ -314,14 +314,14 @@ Status Page
 app.get("/status", (req, res) => {
     const referenceId = req.query.referenceId;
     const order = getOrderFromJson(referenceId);
-
+    console.log("Status Page Reference ID:", referenceId);
     const { success, message } = req.query;
     console.log("Status Query:", req.query);
 
     if (!success && message) {
         return res.render("status", { order: {}, success: success === false, message, isTesting: order.isTesting });
     }
-    console.log("Order fetched for status page:", order);
+    
     return res.render("status", { order, success: true, message: "Payment successful", isTesting: order.isTesting });
 });
 
@@ -429,6 +429,7 @@ app.get("/online/return", (req, res) => {
 
     if (data.status == "00") {
         updateOrderInJson(referenceId, "paymentCompleted", true);
+        console.log(`Payment for order ${data.referenceId} successful.`);
         return res.redirect("/status?referenceId=" + referenceId + "&success=true");
     } else if (data.status == "11") {
         updateOrderInJson(referenceId, "paymentCompleted", false);
