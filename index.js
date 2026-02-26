@@ -318,11 +318,11 @@ app.get("/status", (req, res) => {
     const { success, message } = req.query;
     console.log("Status Query:", req.query);
 
-    if (success && message) {
-        return res.render("status", { order: {}, success: success === false, message });
+    if (!success && message) {
+        return res.render("status", { order: {}, success: success === false, message, isTesting: isTesting });
     }
 
-    return res.render("status", { order, success: true, message: "Payment successful" });
+    return res.render("status", { order, success: true, message: "Payment successful", isTesting: order.isTesting });
 });
 
 /*
