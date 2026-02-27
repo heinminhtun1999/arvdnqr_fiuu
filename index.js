@@ -319,7 +319,7 @@ app.get("/status", (req, res) => {
     const { success, message } = req.query;
     console.log("Status Query:", req.query);
 
-    if (!success) {
+    if (success === "false") {
         return res.render("status", { order: {}, success: success === false, message, isTesting: order.isTesting });
     }
     
