@@ -99,7 +99,7 @@ Offline Checkout Endpoint
 =================
 */
 app.post("/offline", async (req, res) => {
-    const { cartData, no_dstatus } = req.body;
+    const { cartData, no_dstatus, stoppoint } = req.body;
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);;
 
@@ -133,6 +133,7 @@ app.post("/offline", async (req, res) => {
         platform: data.payment_method, // Indicate platform
         machineId: data.machine_id,
         no_dstatus: no_dstatus === "on" ? true : false,
+        stoppoint: stoppoint ? parseInt(stoppoint) : 0,
         isTesting: isTesting
     }
 
@@ -318,7 +319,7 @@ app.get("/status", (req, res) => {
     const { success, message } = req.query;
     console.log("Status Query:", req.query);
 
-    if (!success && message) {
+    if (!success) {
         return res.render("status", { order: {}, success: success === false, message, isTesting: order.isTesting });
     }
     
@@ -331,7 +332,7 @@ Online Checkout Endpoint
 =================
 */
 app.get("/online", async (req, res) => {
-    const { cartData, no_dstatus } = req.query;
+    const { cartData, no_dstatus, stoppoint } = req.query;
 
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -375,7 +376,8 @@ app.get("/online", async (req, res) => {
         platform: "eShop2Online", // Indicate online platform
         machineId: data.machine_id,
         no_dstatus: no_dstatus === "on" ? true : false,
-        isTesting: isTesting
+        isTesting: isTesting,
+        stoppoint: stoppoint ? parseInt(stoppoint) : 0,
     }
 
     // Saving order to orders.json
@@ -479,8 +481,6 @@ app.post("/online/notification", (req, res) => {
         // Start delivery process if not already started
         deliverProducts(req.body.referenceId);
     }
-
-    const data = req.body;
 
     return res.send({ success: true, message: "RECEIVEDOK" });
 });
@@ -647,6 +647,9 @@ async function deliverProducts(referenceId) {
     for (const item of order.items) {
 
         for (let i = 0; i < item.quantity; i++) {
+
+            if (order.stoppoint > 0 && order.stoppoint == i) break; // Stop delivery at the specified stop point for testing purposes
+
             // Simulate delivery process
             const success = Math.random() <= 0.7; // 70% chance of successful delivery
             if (success) {
