@@ -255,20 +255,20 @@ app.post("/offline/notification", (req, res) => {
 
     const order = getOrderFromJson(req.body.referenceId);
 
+    if (!order) {
+        console.log("Order not found for notification:", req.body.referenceId);
+        return res.status(404).json({
+            success: false,
+            message: "Order not found"
+        });
+    }
+
     // Validate signature - Disabled for testing purposes
     if (!validateSignature(req.body, order.machineId)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
         return res.status(400).json({
             success: false,
             message: "(40103) Invalid signature"
-        });
-    }
-
-    if (!order) {
-        console.log("Order not found for notification:", req.body.referenceId);
-        return res.status(404).json({
-            success: false,
-            message: "Order not found"
         });
     }
 
