@@ -99,7 +99,7 @@ Offline Checkout Endpoint
 =================
 */
 app.post("/offline", async (req, res) => {
-    const { cartData, no_dstatus, stoppoint } = req.body;
+    const { cartData, no_dstatus, stoppoint, delivery } = req.body;
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);;
 
@@ -134,7 +134,8 @@ app.post("/offline", async (req, res) => {
         machineId: data.machine_id,
         no_dstatus: no_dstatus === "on" ? true : false,
         stoppoint: stoppoint ? parseInt(stoppoint) : 0,
-        isTesting: isTesting
+        isTesting: isTesting,
+        delivery: delivery || "random"
     }
 
     // Saving order to orders.json
@@ -332,7 +333,7 @@ Online Checkout Endpoint
 =================
 */
 app.get("/online", async (req, res) => {
-    const { cartData, no_dstatus, stoppoint } = req.query;
+    const { cartData, no_dstatus, stoppoint, delivery } = req.query;
 
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -358,8 +359,8 @@ app.get("/online", async (req, res) => {
         returnurl: returnURL,
         callbackurl: callbackURL,
         cancelurl: cancelURL,
-        waittime: "180",
         PaymentExpirationTime: new Date(Date.now() + 3 * 60 * 1000).toISOString(), // 3 minutes from now
+        waittime: "180",
         metadata: JSON.stringify({ machine_id: data.machine_id })
     }
 
@@ -378,6 +379,7 @@ app.get("/online", async (req, res) => {
         no_dstatus: no_dstatus === "on" ? true : false,
         isTesting: isTesting,
         stoppoint: stoppoint ? parseInt(stoppoint) : 0,
+        delivery: delivery || "random"
     }
 
     // Saving order to orders.json
@@ -561,7 +563,7 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-    console.log("Hash String:", hashString);
+    console.log("Hash String:", dataCopy);
     return crypto
         .createHmac("sha256", key)
         .update(hashString, "utf8")
@@ -649,9 +651,17 @@ async function deliverProducts(referenceId) {
         for (let i = 0; i < item.quantity; i++) {
 
             if (order.stoppoint > 0 && order.stoppoint == i) break; // Stop delivery at the specified stop point for testing purposes
-
+            const delivery = order.delivery;
+            let success;
             // Simulate delivery process
-            const success = Math.random() <= 0.7; // 70% chance of successful delivery
+            if (delivery === "random") {
+                success = Math.random() <= 0.7; // 70% chance of successful delivery
+            } else if (delivery === "success") {
+                success = true;
+            } else {
+                success = false;
+            }
+
             if (success) {
                 successCount += 1;
             }

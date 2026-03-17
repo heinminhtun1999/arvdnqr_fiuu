@@ -111,6 +111,15 @@
       <input type="hidden" name="cartData" id="cartData"
         value='{"machine_id": "testmachine2", "payment_method": "arvdnqr"}' />
       <div>
+        <p>Choose delivery status:</p>
+        <input type="radio" name="delivery" value="random" id="random_delivery" checked class="mt-5" />
+        <label for="random_delivery" class="ml-2">Random delivery status</label>
+        <input type="radio" name="delivery" value="success" id="success_delivery" class="mt-5" />
+        <label for="success_delivery" class="ml-2">All success</label>
+        <input type="radio" name="delivery" value="failed" id="failed_delivery" class="mt-5" />
+        <label for="failed_delivery" class="ml-2">All failed</label>
+      </div>
+      <div>
         <input type="checkbox" name="no_dstatus" id="no_dstatus" class="mt-5" />
         <label for="no_dstatus" class="ml-2">Do not send delivery status</label>
       </div>
