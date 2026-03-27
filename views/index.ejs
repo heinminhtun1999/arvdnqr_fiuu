@@ -4,133 +4,348 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
+  <title>ARVDN QR Market</title>
   <link rel="stylesheet" href="/stylesheets/build.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
 </head>
 
-<body class="p-5">
-  <div>
-    <h1 class="text-5xl font-extrabold text-red-900 text-center">ARVDN QR</h1>
-  </div>
-  <!-- Product Container -->
-  <div class="grid grid-cols-3 grid-rows-2 mt-10 gap-5 place-content-center place-items-center w-1/2 m-auto">
-    <!-- Item 1 -->
-    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
-      <img src="/images/chip.png" alt="chip" class="w-[150px] h-[150px]" />
-      <p>Chip</p>
-      <p>Price: RM 1.00</p>
-      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-        data-item-id="1" data-item-name="chip" data-item-price="1.00">
-        Add
-      </button>
-    </div>
-    <!-- Item 2 -->
-    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
-      <img src="/images/chocolate.png" alt="chocolate" class="w-[150px] h-[150px]" />
-      <p>Chocolate</p>
-      <p>Price: RM 0.10</p>
-      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-        data-item-id="2" data-item-name="chocolate" data-item-price="0.10">
-        Add
-      </button>
-    </div>
-    <!-- Item 3 -->
-    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
-      <img src="/images/cola.png" alt="cola" class="w-[150px] h-[150px]" />
-      <p>Cola</p>
-      <p>Price: RM 0.20</p>
-      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-        data-item-id="3" data-item-name="cola" data-item-price="0.20">
-        Add
-      </button>
-    </div>
-    <!-- Item 4 -->
-    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
-      <img src="/images/lime.png" alt="lime" class="w-[150px] h-[150px]" />
-      <p>Lime</p>
-      <p>Price: RM 0.20</p>
-      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-        data-item-id="4" data-item-name="lime" data-item-price="0.20">
-        Add
-      </button>
-    </div>
-    <!-- Item 5 -->
-    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
-      <img src="/images/noodle.png" alt="noodle" class="w-[150px] h-[150px]" />
-      <p>Noodle</p>
-      <p>Price: RM 0.20</p>
-      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-        data-item-id="5" data-item-name="noodle" data-item-price="0.20">
-        Add
-      </button>
-    </div>
-    <!-- Item 6 -->
-    <div class="border-2 rounded-md p-3 w-max h-max flex flex-col justify-center items-center">
-      <img src="/images/soda.png" alt="soda" class="w-[150px] h-[150px]" />
-      <p>Soda</p>
-      <p>Price: RM 0.20</p>
-      <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded add-button hover:bg-blue-400 cursor-pointer"
-        data-item-id="6" data-item-name="soda" data-item-price="0.20">
-        Add
-      </button>
-    </div>
-  </div>
-  <!-- Cart Container -->
-  <div class="mt-10 p-5 flex justify-center flex-col items-center">
-    <h2 class="text-3xl font-bold text-center">Cart</h2>
-    <div id="cart" class="border-2 rounded-md p-5 w-1/2 m-auto mt-5">
-      <p class="text-center text-gray-500">Your cart is empty.</p>
-    </div>
-    <div class="mt-5">
-      <label class="mr-5 font-semibold">Select Payment Method:</label>
-      <div class="inline-block mr-3">
-        <input type="radio" name="paymentMethod" value="eShop2Online" id="eShop2Online" />
-        <label for="eShop2Online">Online Banking/E-Wallet</label>
-      </div>
-      <div class="inline-block">
-        <input type="radio" name="paymentMethod" value="eShop2QR" checked id="eShop2QR" />
-        <label for="eShop2QR">eShop2 Duit Now</label>
-      </div>
-      <div class="inline-block">
-        <input type="radio" name="paymentMethod" value="arvdnqr" checked id="arvdnqr" />
-        <label for="arvdnqr">Duit Now</label>
-      </div>
-    </div>
-    <div>
-      <label class="mr-5 font-semibold">Machine ID:</label>
-      <input type="radio" name="machine_id" value="testmachine2" checked id="testmachine2" />
-      <label for="testmachine2">ARVDNQR Machine</label>
-      <input type="radio" name="machine_id" value="eshop2test" id="eshop2test" />
-      <label for="eshop2test">eShop2 Machine</label>
-      <input type="radio" name="machine_id" value="eshop2testjp" id="eshop2testjp" />
-      <label for="eshop2testjp">eShop2 JingPin Machine</label>
-      <input type="radio" name="machine_id" value="unregistered" id="unregistered" />
-      <label for="unregistered">Un-registered ID</label>
-    </div>
-    <form method="POST" id="checkout_form" action="/offline">
-      <input type="hidden" name="cartData" id="cartData"
-        value='{"machine_id": "testmachine2", "payment_method": "arvdnqr"}' />
+<body
+  class="min-h-screen bg-[radial-gradient(1100px_circle_at_10%_10%,#ffe8c7_0%,transparent_55%),radial-gradient(900px_circle_at_90%_0%,#d6f5ff_0%,transparent_50%),linear-gradient(180deg,#f8fafc_0%,#f3f7ff_45%,#f9f6ef_100%)] text-slate-900 font-['Outfit']"
+>
+  <main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <header class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p>Choose delivery status:</p>
-        <input type="radio" name="delivery" value="random" id="random_delivery" checked class="mt-5" />
-        <label for="random_delivery" class="ml-2">Random delivery status</label>
-        <input type="radio" name="delivery" value="success" id="success_delivery" class="mt-5" />
-        <label for="success_delivery" class="ml-2">All success</label>
-        <input type="radio" name="delivery" value="failed" id="failed_delivery" class="mt-5" />
-        <label for="failed_delivery" class="ml-2">All failed</label>
+        <p class="text-xs uppercase tracking-[0.4em] text-slate-500">Smart vending</p>
+        <h1 class="mt-2 text-4xl sm:text-5xl font-['Space_Grotesk'] font-semibold text-slate-900">
+          ARVDN QR Market
+        </h1>
+        <p class="mt-3 text-sm sm:text-base text-slate-600 max-w-xl">
+          Handpicked snacks and refreshers, ready in seconds. Build your order and scan to pay.
+        </p>
       </div>
+      <div class="flex items-center gap-3 rounded-full bg-white/70 px-4 py-2 shadow-sm">
+        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+        <p class="text-sm text-slate-600">Machine online</p>
+      </div>
+    </header>
+
+    <section class="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
       <div>
-        <input type="checkbox" name="no_dstatus" id="no_dstatus" class="mt-5" />
-        <label for="no_dstatus" class="ml-2">Do not send delivery status</label>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <h2 class="text-2xl font-['Space_Grotesk'] font-semibold">Pick your favorites</h2>
+          <p class="text-sm text-slate-500">Tap add to build your cart</p>
+        </div>
+        <!-- Product Container -->
+        <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Item 1 -->
+          <div
+            class="group relative overflow-hidden rounded-2xl border border-white/60 bg-white/80 p-4 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-white/70 via-white/40 to-transparent opacity-0 transition group-hover:opacity-100"
+            ></div>
+            <div class="relative flex flex-col items-center gap-3 text-center">
+              <img src="/images/chip.png" alt="chip" class="h-28 w-28 sm:h-32 sm:w-32" />
+              <div>
+                <p class="text-lg font-['Space_Grotesk'] font-semibold">Chip</p>
+                <p class="text-sm text-slate-500">Price: RM 1.00</p>
+              </div>
+              <button
+                class="mt-2 w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 add-button"
+                data-item-id="1" data-item-name="chip" data-item-price="1.00"
+              >
+                Add to cart
+              </button>
+            </div>
+          </div>
+          <!-- Item 2 -->
+          <div
+            class="group relative overflow-hidden rounded-2xl border border-white/60 bg-white/80 p-4 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-white/70 via-white/40 to-transparent opacity-0 transition group-hover:opacity-100"
+            ></div>
+            <div class="relative flex flex-col items-center gap-3 text-center">
+              <img src="/images/chocolate.png" alt="chocolate" class="h-28 w-28 sm:h-32 sm:w-32" />
+              <div>
+                <p class="text-lg font-['Space_Grotesk'] font-semibold">Chocolate</p>
+                <p class="text-sm text-slate-500">Price: RM 0.10</p>
+              </div>
+              <button
+                class="mt-2 w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 add-button"
+                data-item-id="2" data-item-name="chocolate" data-item-price="0.10"
+              >
+                Add to cart
+              </button>
+            </div>
+          </div>
+          <!-- Item 3 -->
+          <div
+            class="group relative overflow-hidden rounded-2xl border border-white/60 bg-white/80 p-4 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-white/70 via-white/40 to-transparent opacity-0 transition group-hover:opacity-100"
+            ></div>
+            <div class="relative flex flex-col items-center gap-3 text-center">
+              <img src="/images/cola.png" alt="cola" class="h-28 w-28 sm:h-32 sm:w-32" />
+              <div>
+                <p class="text-lg font-['Space_Grotesk'] font-semibold">Cola</p>
+                <p class="text-sm text-slate-500">Price: RM 0.20</p>
+              </div>
+              <button
+                class="mt-2 w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 add-button"
+                data-item-id="3" data-item-name="cola" data-item-price="0.20"
+              >
+                Add to cart
+              </button>
+            </div>
+          </div>
+          <!-- Item 4 -->
+          <div
+            class="group relative overflow-hidden rounded-2xl border border-white/60 bg-white/80 p-4 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-white/70 via-white/40 to-transparent opacity-0 transition group-hover:opacity-100"
+            ></div>
+            <div class="relative flex flex-col items-center gap-3 text-center">
+              <img src="/images/lime.png" alt="lime" class="h-28 w-28 sm:h-32 sm:w-32" />
+              <div>
+                <p class="text-lg font-['Space_Grotesk'] font-semibold">Lime</p>
+                <p class="text-sm text-slate-500">Price: RM 0.20</p>
+              </div>
+              <button
+                class="mt-2 w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 add-button"
+                data-item-id="4" data-item-name="lime" data-item-price="0.20"
+              >
+                Add to cart
+              </button>
+            </div>
+          </div>
+          <!-- Item 5 -->
+          <div
+            class="group relative overflow-hidden rounded-2xl border border-white/60 bg-white/80 p-4 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-white/70 via-white/40 to-transparent opacity-0 transition group-hover:opacity-100"
+            ></div>
+            <div class="relative flex flex-col items-center gap-3 text-center">
+              <img src="/images/noodle.png" alt="noodle" class="h-28 w-28 sm:h-32 sm:w-32" />
+              <div>
+                <p class="text-lg font-['Space_Grotesk'] font-semibold">Noodle</p>
+                <p class="text-sm text-slate-500">Price: RM 0.20</p>
+              </div>
+              <button
+                class="mt-2 w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 add-button"
+                data-item-id="5" data-item-name="noodle" data-item-price="0.20"
+              >
+                Add to cart
+              </button>
+            </div>
+          </div>
+          <!-- Item 6 -->
+          <div
+            class="group relative overflow-hidden rounded-2xl border border-white/60 bg-white/80 p-4 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-white/70 via-white/40 to-transparent opacity-0 transition group-hover:opacity-100"
+            ></div>
+            <div class="relative flex flex-col items-center gap-3 text-center">
+              <img src="/images/soda.png" alt="soda" class="h-28 w-28 sm:h-32 sm:w-32" />
+              <div>
+                <p class="text-lg font-['Space_Grotesk'] font-semibold">Soda</p>
+                <p class="text-sm text-slate-500">Price: RM 0.20</p>
+              </div>
+              <button
+                class="mt-2 w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 add-button"
+                data-item-id="6" data-item-name="soda" data-item-price="0.20"
+              >
+                Add to cart
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div>
-        <label for="stoppoint" class="ml-2">Set the stop point:</label>
-        <input type="number" name="stoppoint" id="stoppoint" class="mt-5" step="1"  min="0"/>
-      </div>
-      <input type="submit" value="Checkout"
-        class="mt-5 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-400 cursor-pointer" />
-    </form>
-  </div>
+
+      <!-- Cart Container -->
+      <aside
+        class="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-lg lg:sticky lg:top-6 h-fit"
+      >
+        <h2 class="text-2xl font-['Space_Grotesk'] font-semibold">Cart</h2>
+        <div id="cart" class="mt-4 min-h-[140px] rounded-2xl border border-slate-200/70 bg-white/70 p-4">
+          <p class="text-center text-slate-500">Your cart is empty.</p>
+        </div>
+
+        <div class="mt-6 grid gap-4">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-4">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Payment</p>
+            <div class="mt-3 grid gap-3">
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="eShop2Online"
+                  id="eShop2Online"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="eShop2Online" class="text-sm font-medium text-slate-700">
+                  Online Banking/E-Wallet
+                </label>
+              </div>
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="eShop2QR"
+                  checked
+                  id="eShop2QR"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="eShop2QR" class="text-sm font-medium text-slate-700">eShop2 Duit Now</label>
+              </div>
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="arvdnqr"
+                  checked
+                  id="arvdnqr"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="arvdnqr" class="text-sm font-medium text-slate-700">Duit Now</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-4">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Machine</p>
+            <div class="mt-3 grid gap-3">
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="machine_id"
+                  value="testmachine2"
+                  checked
+                  id="testmachine2"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="testmachine2" class="text-sm font-medium text-slate-700">ARVDNQR Machine</label>
+              </div>
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="machine_id"
+                  value="eshop2test"
+                  id="eshop2test"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="eshop2test" class="text-sm font-medium text-slate-700">eShop2 Machine</label>
+              </div>
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="machine_id"
+                  value="eshop2testjp"
+                  id="eshop2testjp"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="eshop2testjp" class="text-sm font-medium text-slate-700">eShop2 JingPin Machine</label>
+              </div>
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="machine_id"
+                  value="unregistered"
+                  id="unregistered"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="unregistered" class="text-sm font-medium text-slate-700">Un-registered ID</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form method="POST" id="checkout_form" action="/offline" class="mt-6 grid gap-4">
+          <input
+            type="hidden"
+            name="cartData"
+            id="cartData"
+            value='{"machine_id": "testmachine2", "payment_method": "arvdnqr"}'
+          />
+          <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-4">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Delivery</p>
+            <div class="mt-3 grid gap-3">
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="delivery"
+                  value="random"
+                  id="random_delivery"
+                  checked
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="random_delivery" class="text-sm font-medium text-slate-700">
+                  Random delivery status
+                </label>
+              </div>
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="delivery"
+                  value="success"
+                  id="success_delivery"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="success_delivery" class="text-sm font-medium text-slate-700">All success</label>
+              </div>
+              <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="radio"
+                  name="delivery"
+                  value="failed"
+                  id="failed_delivery"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <label for="failed_delivery" class="text-sm font-medium text-slate-700">All failed</label>
+              </div>
+              <label class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
+                <input
+                  type="checkbox"
+                  name="no_dstatus"
+                  id="no_dstatus"
+                  class="h-4 w-4 accent-emerald-500"
+                />
+                <span class="text-sm font-medium text-slate-700">Do not send delivery status</span>
+              </label>
+              <div class="grid gap-2">
+                <label for="stoppoint" class="text-sm font-medium text-slate-700">
+                  Set the stop point
+                </label>
+                <input
+                  type="number"
+                  name="stoppoint"
+                  id="stoppoint"
+                  class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                  step="1"
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <input
+            type="submit"
+            value="Checkout"
+            class="mt-1 w-full rounded-full bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-400"
+          />
+        </form>
+      </aside>
+    </section>
+  </main>
 </body>
 
 <script>
@@ -286,6 +501,34 @@
     });
   });
 
+  // Remove from cart (event delegation)
+  cart.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!target.classList.contains("remove-button")) {
+      return;
+    }
+
+    const itemId = target.getAttribute("data-item-id");
+    const itemIndex = cartItems.findIndex((item) => item.id === itemId);
+    if (itemIndex === -1) {
+      return;
+    }
+
+    cartItems[itemIndex].quantity -= 1;
+    if (cartItems[itemIndex].quantity <= 0) {
+      cartItems.splice(itemIndex, 1);
+    }
+
+    renderCart();
+
+    const originalCartData = JSON.parse(cartDataInput.value || "{}");
+    cartDataInput.value = JSON.stringify({
+      ...originalCartData,
+      cartItems: cartItems,
+      total: calculateTotal(),
+    });
+  });
+
   // Render cart items
   function renderCart() {
     const innerText = cart.querySelector("p");
@@ -323,6 +566,9 @@
           <p>${item.name}</p>
           <p id="item-price">RM ${item.price.toFixed(2)} x ${item.quantity}</p>
           <p id="item-total">RM ${(item.price * item.quantity).toFixed(2)}</p>
+          <button class="remove-button rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100" data-item-id="${item.id}">
+            Remove
+          </button>
         `;
 
       itemDiv.classList.add("mb-2");

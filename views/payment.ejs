@@ -3,28 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scan</title>
+    <title>Scan to Pay</title>
     <link rel="stylesheet" href="/stylesheets/build.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script
       type="text/javascript"
       src="/javascripts/davidshimjs-qrcodejs-04f46c6/qrcode.js"
     ></script>
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
   </head>
-  <body>
-    <div class="w-full h-full flex flex-col justify-center items-center p-10">
-      <h1 class="text-3xl font-bold mb-5">Scan to Pay</h1>
-      <div id="qrcode"></div>
-      <div>QR Expires in: <span id="timer">03:00</span></div>
-      <form action="/cancel" method="POST" class="mt-5">
-        <input type="hidden" name="orderData" value="<%= JSON.stringify(data) %>" />
-        <button
-          type="submit"
-          class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-400 cursor-pointer"
-        >
-          Cancel Payment
-        </button>
-    </div>
+  <body
+    class="min-h-screen bg-[radial-gradient(1100px_circle_at_10%_10%,#ffe8c7_0%,transparent_55%),radial-gradient(900px_circle_at_90%_0%,#d6f5ff_0%,transparent_50%),linear-gradient(180deg,#f8fafc_0%,#f3f7ff_45%,#f9f6ef_100%)] text-slate-900 font-['Outfit']"
+  >
+    <main class="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4 py-10">
+      <div class="w-full rounded-3xl border border-white/70 bg-white/80 p-6 shadow-xl sm:p-8">
+        <p class="text-xs uppercase tracking-[0.4em] text-slate-500">Payment</p>
+        <h1 class="mt-2 text-3xl sm:text-4xl font-['Space_Grotesk'] font-semibold">Scan to Pay</h1>
+        <p class="mt-2 text-sm text-slate-600">
+          Use your banking app to scan the code below. Keep this tab open until payment is confirmed.
+        </p>
+
+        <div class="mt-6 rounded-3xl border border-slate-200/70 bg-white/80 p-5 shadow-sm">
+          <div class="flex items-center justify-center rounded-2xl bg-white p-4 shadow-inner">
+            <div id="qrcode" class="h-64 w-64"></div>
+          </div>
+          <div class="mt-4 flex items-center justify-between text-sm text-slate-600">
+            <span>QR Expires in</span>
+            <span id="timer" class="text-lg font-['Space_Grotesk'] font-semibold text-slate-900">03:00</span>
+          </div>
+        </div>
+
+        <form action="/cancel" method="POST" class="mt-6">
+          <input type="hidden" name="orderData" value="<%= JSON.stringify(data) %>" />
+          <button
+            type="submit"
+            class="w-full rounded-full bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
+          >
+            Cancel Payment
+          </button>
+        </form>
+      </div>
+    </main>
   </body>
   <!-- Scripts -->
   <script type="text/javascript">
