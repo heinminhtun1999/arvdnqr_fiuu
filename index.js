@@ -632,7 +632,7 @@ function createOrderID(machine_id) {
     let text = machine_id + "-";
     const randomNumber = Math.floor(Math.random() * 1000) + 1000;
     const timestamp = Date.now();
-    const randomNumber2 = Math.floor(Math.random() * 1000);
+    const randomNumber2 = Math.floor(Math.random() * 999) + 1;
     text += Math.round(timestamp / randomNumber2 * 1.5) + randomNumber;
     return text;
 }
