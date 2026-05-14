@@ -76,7 +76,8 @@ app.get("/testing", (req, res) => {
     URLS = {
         arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
         eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
-        eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline"
+        eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline",
+        eshop2ARgo: "https://app.arvending.com.my/eshop2"
     }
     res.render("index");
 });
@@ -87,7 +88,8 @@ app.get("/", (req, res) => {
         // eShop2Online: "https://fonlinedemo.onrender.com",
         eShop2Online: "https://argo.arvending.com.my/eshop2/online",
         // eShop2Online: "http://localhost:3000",
-        eShop2QR: "https://argo.arvending.com.my/eshop2/offline"
+        eShop2QR: "https://argo.arvending.com.my/eshop2/offline",
+        eshop2ARgo: "https://app.arvending.com.my/eshop2"
     }
     isTesting = false;
     res.render("index");
@@ -323,7 +325,7 @@ app.get("/status", (req, res) => {
     if (success === "false") {
         return res.render("status", { order: {}, success: success === false, message, isTesting: order.isTesting });
     }
-    
+
     return res.render("status", { order, success: true, message: "Payment successful", isTesting: order.isTesting });
 });
 
@@ -454,20 +456,21 @@ app.post("/online/notification", (req, res) => {
 
     const order = getOrderFromJson(req.body.referenceId);
     console.log("Online Notification Body:", req.body);
-    // Validate signature 
-    if (!validateSignature(req.body, order.machineId)) {
-        console.log("Invalid signature for notification:", req.body.referenceId);
-        return res.status(400).json({
-            success: false,
-            message: "Invalid signature"
-        });
-    }
 
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(404).json({
             success: false,
             message: "Order not found"
+        });
+    }
+
+    // Validate signature 
+    if (!validateSignature(req.body, order.machineId)) {
+        console.log("Invalid signature for notification:", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "Invalid signature"
         });
     }
 
@@ -495,6 +498,104 @@ Online Cancel Endpoint
 app.get("/online/cancel", (req, res) => {
     return res.send("Cancel URL - Payment Cancelled. You can close this page.");
 });
+
+/*
+=================
+ARgo Payment Method Endpoint 
+=================
+*/
+app.get("/argo", (req, res) => {
+    const { cartData, no_dstatus, stoppoint, delivery } = req.query;
+
+    const data = JSON.parse(cartData);
+    const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    const referenceId = createOrderID(data.machine_id);
+    console.log(req.query)
+
+    let url = URLS["eshop2ARgo"]; // ARgo URL
+
+    // Create order object and add to activeOrders
+    const order = {
+        referenceId: referenceId,
+        amount: data.total.toFixed(2),
+        items: data.cartItems.map(item => ({ ...item, deliveryStatus: [] })),
+        timestamp: Date.now(),
+        active: true,
+        paymentCompleted: false,
+        totalQuantity: totalQuantity,
+        isDelivering: false,
+        platform: "eShop2ARgo", // Indicate online platform
+        machineId: data.machine_id,
+        no_dstatus: no_dstatus === "on" ? true : false,
+        isTesting: isTesting,
+        stoppoint: stoppoint ? parseInt(stoppoint) : 0,
+        delivery: delivery || "random"
+    }
+
+    // Saving order to orders.json
+    addOrderToJson(order);
+
+    // Body
+    const body = {
+        referenceid: referenceId,
+        mid: data.machine_id,
+        amount: data.total.toFixed(2)
+    }
+
+    const queryString = qs.stringify(body);
+    const paymentURL = url + "?" + queryString;
+
+    console.log("Payment URL:", paymentURL);
+
+    return res.redirect(paymentURL);
+});
+
+
+/*
+=================
+ARgo Notification Endpoint 
+=================
+*/
+app.post("/argo/notification", (req, res) => {
+    const { mid, referenceid, amount, statusCode, msg, signature } = req.body;
+
+    const order = getOrderFromJson(referenceid);
+
+    if (!order) {
+        console.log("Order not found for notification:", req.body.referenceId);
+        return res.status(404).json({
+            success: false,
+            message: "Order not found"
+        });
+    }
+
+    if (!validateSignature(req.body, order.machineId)) {
+        console.log("Invalid signature for notification:", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "Invalid signature"
+        });
+    }
+
+    if (!order.active) {
+        console.log("Order is expired", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "Order is expired"
+        });
+    }
+
+    if (!order.isDelivering) {
+        // Start delivery process if not already started
+        deliverProducts(req.body.referenceId);
+    }
+
+    return res.send({ success: true, message: "RECEIVEDOK" });
+
+});
+
+
 
 /*
 =================
