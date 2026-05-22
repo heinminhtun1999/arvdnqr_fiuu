@@ -638,7 +638,7 @@ function createOrderID(machine_id) {
 }
 
 function getKey(machineId) {
-    if (machineId === "testmachine2") {
+    if (machineId === "P02562601290001") {
         return process.env.arvdnqrkey;
     } else if (machineId === "eshop2test") {
         return process.env.eshop2offlinekey;
