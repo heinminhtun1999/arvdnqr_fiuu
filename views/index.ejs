@@ -197,7 +197,7 @@
             <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Machine</p>
             <div class="mt-3 grid gap-3">
               <div class="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2">
-                <input type="radio" name="machine_id" value="P02562601290001" checked id="testmachine2"
+                <input type="radio" name="machine_id" value="testmachine2" checked id="testmachine2"
                   class="h-4 w-4 accent-emerald-500" />
                 <label for="testmachine2" class="text-sm font-medium text-slate-700">ARVDNQR Machine</label>
               </div>
@@ -222,7 +222,7 @@
 
         <form method="POST" id="checkout_form" action="/offline" class="mt-6 grid gap-4">
           <input type="hidden" name="cartData" id="cartData"
-            value='{"machine_id": "P02562601290001", "payment_method": "arvdnqr"}' />
+            value='{"machine_id": "testmachine2", "payment_method": "arvdnqr"}' />
           <div class="rounded-2xl border border-slate-200/70 bg-white/70 p-4">
             <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Delivery</p>
             <div class="mt-3 grid gap-3">
@@ -328,11 +328,11 @@
         }
       } else {
         machineIdInputs.forEach((radio) => {
-          if (radio.value == "P02562601290001") {
+          if (radio.value == "testmachine2") {
             radio.checked = true;
             cartDataInput.value = JSON.stringify({
               ...JSON.parse(cartDataInput.value || "{}"),
-              machine_id: "P02562601290001",
+              machine_id: "testmachine2",
             });
           }
         });
@@ -350,7 +350,7 @@
         machine_id: selectedMachineId,
       });
 
-      if (input.value == "P02562601290001") {
+      if (input.value == "testmachine2") {
         paymentMethodInputs.forEach((radio) => {
           if (radio.value == "arvdnqr") {
             radio.checked = true;
