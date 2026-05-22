@@ -106,7 +106,7 @@ app.post("/offline", async (req, res) => {
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);;
 
     let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
-
+    console.log(data.machine_id)
     const referenceId = createOrderID(data.machine_id);
 
     // Create request body for ARgo QR
