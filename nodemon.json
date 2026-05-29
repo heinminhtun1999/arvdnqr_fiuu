@@ -1,0 +1,3 @@
+{
+  "ignore": [ "public/orders.json", "*.json"]
+}

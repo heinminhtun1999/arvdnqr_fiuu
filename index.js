@@ -89,7 +89,8 @@ app.get("/", (req, res) => {
         eShop2Online: "https://argo.arvending.com.my/eshop2/online",
         // eShop2Online: "http://localhost:3000",
         eShop2QR: "https://argo.arvending.com.my/eshop2/offline",
-        eshop2ARgo: "https://app.arvending.com.my/eshop2"
+        eshop2ARgo: "https://api.arvending.com.my/payment/redirect_url"
+        
     }
     isTesting = false;
     res.render("index");
@@ -148,12 +149,15 @@ app.post("/offline", async (req, res) => {
     body["signature"] = hash;
     console.log("Request Body:", body);
     try {
+        const start = (new Date()).getTime()
         const response = await axios.post(url, qs.stringify(body), {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
+        const end = (new Date()).getTime()
 
+        console.log((end - start) / 1000, "seconds")
 
         const data = response.data;
         console.log("Response Data:", data);
@@ -664,7 +668,6 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-    console.log("Hash String:", dataCopy);
     return crypto
         .createHmac("sha256", key)
         .update(hashString, "utf8")
@@ -673,10 +676,8 @@ function generateHash(data, key) {
 
 // Validate Signature
 function validateSignature(data, machineId) {
-    console.log("Validate Signature: ", machineId);
     const signature = data.signature;
     const expectedHash = generateHash(data, getKey(machineId));
-    console.log("Validating Signature:", { signature, expectedHash });
     return signature === expectedHash;
 }
 
