@@ -77,7 +77,7 @@ app.get("/testing", (req, res) => {
         arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
         eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
         eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline",
-        eshop2ARgo: "https://betapi.arvending.com.my/payment/redirect_url?amount=8&referenceid=1234567893456&mid=eshop2test"
+        eshop2ARgo: "https://betapi.arvending.com.my/payment/redirect_url"
     }
     res.render("index");
 });
