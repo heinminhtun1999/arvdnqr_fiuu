@@ -243,8 +243,6 @@ app.post("/cancel", async (req, res) => {
             console.log("Failed to cancel order:", referenceId);
         }
 
-        // Need to implement signature validation for response here
-
     } catch (e) {
         console.log("ERROR", e);
         return res.status(500).json(e);
@@ -565,7 +563,8 @@ app.post("/argo/notification", (req, res) => {
     const { mid, referenceid, amount, statusCode, msg, signature } = req.body;
 
     const order = getOrderFromJson(referenceid);
-
+    console.log(order, referenceid)
+    console.log(req.body)
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(404).json({
