@@ -146,7 +146,7 @@ app.post("/offline", async (req, res) => {
 
     // Create signature for request body for ARgo QR
     const hash = generateHash(body, getKey(data.machine_id));
-    body["signature"] = hash + "ASD";
+    body["signature"] = hash;
     console.log("Request Body:", body);
     try {
         const start = (new Date()).getTime()
