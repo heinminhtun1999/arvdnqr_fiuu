@@ -513,7 +513,6 @@ app.get("/argo", (req, res) => {
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     const referenceId = createOrderID(data.machine_id);
-    console.log(req.query)
 
     let url = URLS["eshop2ARgo"]; // ARgo URL
 
@@ -548,8 +547,6 @@ app.get("/argo", (req, res) => {
     const queryString = qs.stringify(body);
     const paymentURL = url + "?" + queryString;
 
-    console.log("Payment URL:", paymentURL);
-
     return res.redirect(paymentURL);
 });
 
@@ -563,8 +560,8 @@ app.post("/argo/notification", (req, res) => {
     const { mid, referenceid, amount, statusCode, msg, signature } = req.body;
 
     const order = getOrderFromJson(referenceid);
-    console.log(order, referenceid)
-    console.log(req.body)
+    console.log("Notification", order, referenceid)
+    console.log("Notification Body", req.body)
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(404).json({
