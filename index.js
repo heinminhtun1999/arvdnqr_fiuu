@@ -516,6 +516,8 @@ app.get("/argo", (req, res) => {
 
     let url = URLS["eshop2ARgo"]; // ARgo URL
 
+    console.log(url)
+
     // Create order object and add to activeOrders
     const order = {
         referenceId: referenceId,
