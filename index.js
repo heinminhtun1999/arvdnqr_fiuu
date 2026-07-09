@@ -566,7 +566,7 @@ app.post("/argo/notification", (req, res) => {
     console.log("Notification Body", req.body)
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
-        return res.status(404).json({
+        return res.status(200).json({
             success: false,
             message: "Order not found"
         });
