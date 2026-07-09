@@ -559,7 +559,7 @@ ARgo Notification Endpoint
 =================
 */
 app.post("/argo/notification", (req, res) => {
-    const { mid, referenceid, amount, statusCode, msg, signature } = req.body;
+    const referenceid = req.body?.referenceId;
 
     const order = getOrderFromJson(referenceid);
     console.log("Notification", order, referenceid)
@@ -699,6 +699,7 @@ function checkTimeout(duration, referenceId) {
 // Adding order to orders.json
 function addOrderToJson(order) {
     const ordersData = fs.readFileSync(orderJsonFilePath);
+    
     const orders = JSON.parse(ordersData);
     orders.push(order);
     fs.writeFileSync(orderJsonFilePath, JSON.stringify(orders, null, 2));
