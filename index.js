@@ -616,6 +616,13 @@ app.post("/ipay88/backend", (req, res) => {
     res.status(200).json({ message: "iPay88 Notification Received", data });
 });
 
+app.get("/version", (req, res) => {
+    res.json({
+        version: "argo-callback-test-v2",
+        time: new Date()
+    });
+});
+
 /*
 ================
 Start the Server
