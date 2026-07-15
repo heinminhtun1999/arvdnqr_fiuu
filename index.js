@@ -468,17 +468,17 @@ app.post("/online/notification", (req, res) => {
     }
 
     // Validate signature 
-    // if (!validateSignature(req.body, order.machineId)) {
-    //     console.log("Invalid signature for notification:", req.body.referenceId);
-    //     return res.status(200).json({
-    //         success: false,
-    //         message: "Invalid signature"
-    //     });
-    // }
+    if (!validateSignature(req.body, order.machineId)) {
+        console.log("Invalid signature for notification:", req.body.referenceId);
+        return res.status(400).json({
+            success: false,
+            message: "Invalid signature"
+        });
+    }
 
     if (!order.active) {
         console.log("Order is expired", req.body.referenceId);
-        return res.status(200).json({
+        return res.status(400).json({
             success: false,
             message: "Order is expired"
         });
@@ -563,7 +563,7 @@ app.post("/argo/notification", (req, res) => {
 
     const order = getOrderFromJson(referenceid);
     // console.log("Notification", order, referenceid)
-    // console.log("Notification Body", req.body)
+    console.log("Notification Body", req.body)
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(200).json({
@@ -574,7 +574,7 @@ app.post("/argo/notification", (req, res) => {
 
     if (!validateSignature(req.body, order.machineId)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
-        return res.status(400).json({
+        return res.status(200).json({
             success: false,
             message: "Invalid signature"
         });
@@ -583,7 +583,7 @@ app.post("/argo/notification", (req, res) => {
 
     if (!order.active) {
         console.log("Order is expired", req.body.referenceId);
-        return res.status(400).json({
+        return res.status(200).json({
             success: false,
             message: "Order is expired"
         });
