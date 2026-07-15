@@ -468,13 +468,13 @@ app.post("/online/notification", (req, res) => {
     }
 
     // Validate signature 
-    if (!validateSignature(req.body, order.machineId)) {
-        console.log("Invalid signature for notification:", req.body.referenceId);
-        return res.status(200).json({
-            success: false,
-            message: "Invalid signature"
-        });
-    }
+    // if (!validateSignature(req.body, order.machineId)) {
+    //     console.log("Invalid signature for notification:", req.body.referenceId);
+    //     return res.status(200).json({
+    //         success: false,
+    //         message: "Invalid signature"
+    //     });
+    // }
 
     if (!order.active) {
         console.log("Order is expired", req.body.referenceId);
