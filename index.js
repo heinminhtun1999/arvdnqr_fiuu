@@ -90,7 +90,7 @@ app.get("/", (req, res) => {
         // eShop2Online: "http://localhost:3000",
         eShop2QR: "https://argo.arvending.com.my/eshop2/offline",
         eshop2ARgo: "https://api.arvending.com.my/payment/redirect_url"
-        
+
     }
     isTesting = false;
     res.render("index");
@@ -559,11 +559,11 @@ ARgo Notification Endpoint
 =================
 */
 app.post("/argo/notification", (req, res) => {
-    const referenceid = req.body?.referenceId;
+    const referenceid = req.body.referenceId;
 
     const order = getOrderFromJson(referenceid);
-    console.log("Notification", order, referenceid)
-    console.log("Notification Body", req.body)
+    // console.log("Notification", order, referenceid)
+    // console.log("Notification Body", req.body)
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(200).json({
@@ -580,6 +580,7 @@ app.post("/argo/notification", (req, res) => {
         });
     }
 
+
     if (!order.active) {
         console.log("Order is expired", req.body.referenceId);
         return res.status(400).json({
@@ -589,12 +590,10 @@ app.post("/argo/notification", (req, res) => {
     }
 
     if (!order.isDelivering) {
-        // Start delivery process if not already started
         deliverProducts(req.body.referenceId);
     }
 
-    return res.send({ success: true, message: "RECEIVEDOK" });
-
+    return res.status(200).send({ success: true, message: "RECEIVEDOK" });
 });
 
 
@@ -617,10 +616,15 @@ app.post("/ipay88/backend", (req, res) => {
 });
 
 app.get("/version", (req, res) => {
-    res.json({
+    return res.json({
         version: "argo-callback-test-v2",
         time: new Date()
     });
+});
+
+app.all("*", (req, res) => {
+    console.log("Reach Here")
+    return res.status(200).json({ success: true, message: "RECEIVEDOK" });
 });
 
 /*
@@ -706,7 +710,7 @@ function checkTimeout(duration, referenceId) {
 // Adding order to orders.json
 function addOrderToJson(order) {
     const ordersData = fs.readFileSync(orderJsonFilePath);
-    
+
     const orders = JSON.parse(ordersData);
     orders.push(order);
     fs.writeFileSync(orderJsonFilePath, JSON.stringify(orders, null, 2));
