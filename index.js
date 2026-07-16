@@ -598,6 +598,8 @@ app.post("/argo/notification", (req, res) => {
         message: "RECEIVEDOK"
     }
 
+    console.log("Response from callback to ARgo: ", response)
+
     return res.status(200).send(response);
 });
 
