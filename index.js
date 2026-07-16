@@ -563,7 +563,7 @@ app.post("/argo/notification", (req, res) => {
 
     const order = getOrderFromJson(referenceid);
     // console.log("Notification", order, referenceid)
-    console.log("Notification Body", req.body)
+    console.log("Callback Request Body", req.body)
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(200).json({
@@ -593,7 +593,12 @@ app.post("/argo/notification", (req, res) => {
         deliverProducts(req.body.referenceId);
     }
 
-    return res.status(200).send({ success: true, message: "RECEIVEDOK" });
+    const response = {
+        success: true,
+        message: "RECEIVEDOK"
+    }
+
+    return res.status(200).send(response);
 });
 
 
@@ -677,7 +682,7 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-    console.log(hashString)
+
     return crypto
         .createHmac("sha256", key)
         .update(hashString, "utf8")
