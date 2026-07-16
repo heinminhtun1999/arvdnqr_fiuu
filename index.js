@@ -573,11 +573,13 @@ app.post("/argo/notification", (req, res) => {
     }
 
     if (!validateSignature(req.body, order.machineId)) {
-        console.log("Invalid signature for notification:", req.body.referenceId);
-        return res.status(200).json({
+        const response = {
             success: false,
             message: "Invalid signature"
-        });
+        }
+        console.log("Invalid signature for notification:", req.body.referenceId);
+        console.log("Response from callback to ARgo: ", response)
+        return res.status(200).json(response);
     }
 
 
@@ -597,8 +599,6 @@ app.post("/argo/notification", (req, res) => {
         success: true,
         message: "RECEIVEDOK"
     }
-
-    console.log("Response from callback to ARgo: ", response)
 
     return res.status(200).send(response);
 });
