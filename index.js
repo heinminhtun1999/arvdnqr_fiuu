@@ -21,7 +21,21 @@ Initialization and Configuration
 
 const PORT = process.env.PORT || 4000;
 let isTesting = false;
-let URLS = {};
+let URLS = {
+    true: {
+        arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
+        eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
+        eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline",
+        eshop2ARgo: "https://betapi.arvending.com.my/payment/redirect_url"
+    },
+    false: {
+        arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
+        eShop2Online: "https://argo.arvending.com.my/eshop2/online",
+        eShop2QR: "https://argo.arvending.com.my/eshop2/offline",
+        eshop2ARgo: "https://api.arvending.com.my/payment/redirect_url"
+    }
+
+};
 
 const app = express();
 
@@ -73,25 +87,10 @@ if (!fs.existsSync(orderJsonFilePath)) {
 
 app.get("/testing", (req, res) => {
     isTesting = true;
-    URLS = {
-        arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
-        eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
-        eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline",
-        eshop2ARgo: "https://betapi.arvending.com.my/payment/redirect_url"
-    }
     res.render("index");
 });
 
 app.get("/", (req, res) => {
-    URLS = {
-        arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
-        // eShop2Online: "https://fonlinedemo.onrender.com",
-        eShop2Online: "https://argo.arvending.com.my/eshop2/online",
-        // eShop2Online: "http://localhost:3000",
-        eShop2QR: "https://argo.arvending.com.my/eshop2/offline",
-        eshop2ARgo: "https://api.arvending.com.my/payment/redirect_url"
-
-    }
     isTesting = false;
     res.render("index");
 })
@@ -106,7 +105,7 @@ app.post("/offline", async (req, res) => {
     const data = JSON.parse(cartData);
     const totalQuantity = data.cartItems.reduce((sum, item) => sum + item.quantity, 0);;
 
-    let url = URLS[data.payment_method] + "/precreate/"; // ARgo URL
+    let url = URLS[isTesting][data.payment_method] + "/precreate/"; // ARgo URL
 
     const referenceId = createOrderID(data.machine_id);
 
@@ -202,7 +201,7 @@ app.post("/cancel", async (req, res) => {
     }
 
     const referenceId = order.referenceId;
-    const url = URLS[existingOrder.platform] + "/reversal/";
+    const url = URLS[isTesting][existingOrder.platform] + "/reversal/";
 
     console.log("URL: ", url);
     const body = {
@@ -347,7 +346,7 @@ app.get("/online", async (req, res) => {
     const callbackURL = currentURL + "/notification";
     const cancelURL = currentURL + "/cancel";
 
-    let url = URLS["eShop2Online"] + "/payment/"; // ARgo URL
+    let url = URLS[isTesting]["eShop2Online"] + "/payment/"; // ARgo URL
 
     const referenceId = createOrderID(data.machine_id);
 
@@ -514,7 +513,7 @@ app.get("/argo", (req, res) => {
 
     const referenceId = createOrderID(data.machine_id);
 
-    let url = URLS["eshop2ARgo"]; // ARgo URL
+    let url = URLS[isTesting]["eshop2ARgo"]; // ARgo URL
 
     console.log(url)
 
@@ -578,7 +577,7 @@ app.post("/argo/notification", (req, res) => {
             message: "Invalid signature"
         }
         console.log("Invalid signature for notification:", req.body.referenceId);
-        console.log("Response from callback to ARgo: ", response)
+
         return res.status(200).json(response);
     }
 
@@ -684,7 +683,7 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-
+    console.log("Hash String", hashString)
     return crypto
         .createHmac("sha256", key)
         .update(hashString, "utf8")
@@ -695,6 +694,7 @@ function generateHash(data, key) {
 function validateSignature(data, machineId) {
     const signature = data.signature;
     const expectedHash = generateHash(data, getKey(machineId));
+    console.log("Expected Hash", expectedHash);
     return signature === expectedHash;
 }
 
@@ -830,8 +830,8 @@ async function deliverProducts(referenceId) {
                     const hash = generateHash(requestBody, getKey(order.machineId));
                     requestBody["signature"] = hash;
 
-                    console.log("Dstatus Request Body:", requestBody);
-                    const url = URLS[order.platform] + "/dstatus/";
+                    const url = URLS[order.isTesting][order.platform] + "/dstatus/";
+                    console.log("Dstatus Request Body: ", requestBody, "Dstatus url: ", url);
 
                     const response = await axios.post(url, qs.stringify(requestBody), {
                         headers: {
