@@ -32,7 +32,7 @@ let URLS = {
         arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
         eShop2Online: "https://argo.arvending.com.my/eshop2/online",
         eShop2QR: "https://argo.arvending.com.my/eshop2/offline",
-        eshop2ARgo: "https://api.arvending.com.my/eshop2"
+        eshop2ARgo: "https://app.arvending.com.my/eshop2"
     }
 
 };
