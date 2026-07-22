@@ -26,13 +26,13 @@ let URLS = {
         arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
         eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
         eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline",
-        eshop2ARgo: "https://betapi.arvending.com.my/payment"
+        eshop2ARgo: "https://betapi.arvending.com.my/eshop2"
     },
     false: {
         arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
         eShop2Online: "https://argo.arvending.com.my/eshop2/online",
         eShop2QR: "https://argo.arvending.com.my/eshop2/offline",
-        eshop2ARgo: "https://api.arvending.com.my/payment"
+        eshop2ARgo: "https://api.arvending.com.my/eshop2"
     }
 
 };
@@ -513,7 +513,7 @@ app.get("/argo", (req, res) => {
 
     const referenceId = createOrderID(data.machine_id);
 
-    let url = URLS[isTesting]["eshop2ARgo"] + "/redirect_url"; // ARgo URL
+    let url = URLS[isTesting]["eshop2ARgo"]; // ARgo URL
 
     console.log(url)
 
@@ -685,7 +685,7 @@ function generateHash(data, key) {
     }
     console.log("Hash String", hashString)
     return crypto
-        .createHmac("sha256", key)
+        .createHmac("sha256", key || "abc")
         .update(hashString, "utf8")
         .digest("hex");
 }
