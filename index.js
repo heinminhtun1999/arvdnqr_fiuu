@@ -263,7 +263,7 @@ app.post("/offline/notification", (req, res) => {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(404).json({
             success: false,
-            message: "Order not found"
+            message: "(1004) Reference ID does not exist."
         });
     }
 
@@ -272,7 +272,7 @@ app.post("/offline/notification", (req, res) => {
         console.log("Invalid signature for notification:", req.body.referenceId);
         return res.status(400).json({
             success: false,
-            message: "(40103) Invalid signature"
+            message: "(1001) Invalid signature"
         });
     }
 
@@ -280,7 +280,7 @@ app.post("/offline/notification", (req, res) => {
         console.log("Order is expired", req.body.referenceId);
         return res.status(400).json({
             success: false,
-            message: "Order is expired"
+            message: "(1005) Order is expired"
         });
     }
 
@@ -462,7 +462,7 @@ app.post("/online/notification", (req, res) => {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(404).json({
             success: false,
-            message: "Order not found"
+            message: "(1004) Reference ID does not exist"
         });
     }
 
@@ -471,7 +471,7 @@ app.post("/online/notification", (req, res) => {
         console.log("Invalid signature for notification:", req.body.referenceId);
         return res.status(400).json({
             success: false,
-            message: "Invalid signature"
+            message: "(1001) Invalid signature"
         });
     }
 
@@ -479,7 +479,7 @@ app.post("/online/notification", (req, res) => {
         console.log("Order is expired", req.body.referenceId);
         return res.status(400).json({
             success: false,
-            message: "Order is expired"
+            message: "(1005) Order is expired"
         });
     }
 
@@ -567,14 +567,14 @@ app.post("/argo/notification", (req, res) => {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(200).json({
             success: false,
-            message: "Order not found"
+            message: "(1004) Reference ID does not exist"
         });
     }
 
     if (!validateSignature(req.body, order.machineId)) {
         const response = {
             success: false,
-            message: "Invalid signature"
+            message: "(1001) Invalid signature"
         }
         console.log("Invalid signature for notification:", req.body.referenceId);
 
@@ -586,7 +586,7 @@ app.post("/argo/notification", (req, res) => {
         console.log("Order is expired", req.body.referenceId);
         return res.status(200).json({
             success: false,
-            message: "Order is expired"
+            message: "(1005) Order is expired"
         });
     }
 
