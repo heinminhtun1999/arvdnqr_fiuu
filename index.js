@@ -26,13 +26,13 @@ let URLS = {
         arvdnqr: "https://argo.arvending.com.my/beta/arvdnqrapi",
         eShop2Online: "https://argo.arvending.com.my/beta/eshop2/online",
         eShop2QR: "https://argo.arvending.com.my/beta/eshop2/offline",
-        eshop2ARgo: "https://betapi.arvending.com.my/payment/redirect_url"
+        eshop2ARgo: "https://betapi.arvending.com.my/payment"
     },
     false: {
         arvdnqr: "https://argo.arvending.com.my/arvdnqrapi",
         eShop2Online: "https://argo.arvending.com.my/eshop2/online",
         eShop2QR: "https://argo.arvending.com.my/eshop2/offline",
-        eshop2ARgo: "https://api.arvending.com.my/payment/redirect_url"
+        eshop2ARgo: "https://api.arvending.com.my/payment"
     }
 
 };
@@ -513,7 +513,7 @@ app.get("/argo", (req, res) => {
 
     const referenceId = createOrderID(data.machine_id);
 
-    let url = URLS[isTesting]["eshop2ARgo"]; // ARgo URL
+    let url = URLS[isTesting]["eshop2ARgo"] + "/redirect_url"; // ARgo URL
 
     console.log(url)
 
@@ -527,7 +527,7 @@ app.get("/argo", (req, res) => {
         paymentCompleted: false,
         totalQuantity: totalQuantity,
         isDelivering: false,
-        platform: "eShop2ARgo", // Indicate online platform
+        platform: "eshop2ARgo", // Indicate online platform
         machineId: data.machine_id,
         no_dstatus: no_dstatus === "on" ? true : false,
         isTesting: isTesting,
@@ -829,9 +829,15 @@ async function deliverProducts(referenceId) {
 
                     const hash = generateHash(requestBody, getKey(order.machineId));
                     requestBody["signature"] = hash;
+                    
+                    let url;
+                    if (order.platform == 'eshop2ARgo') {
+                        url = "https://argo.arvending.com.my/eshop2/app/dstatus/";
+                    } else {
+                        url = URLS[order.isTesting][order.platform] + "/dstatus/";
+                    }
 
-                    const url = URLS[order.isTesting][order.platform] + "/dstatus/";
-                    console.log("Dstatus Request Body: ", requestBody, "Dstatus url: ", url);
+                    console.log("Dstatus Request Body: ", requestBody);
 
                     const response = await axios.post(url, qs.stringify(requestBody), {
                         headers: {
