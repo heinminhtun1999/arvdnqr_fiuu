@@ -267,7 +267,6 @@ app.post("/offline/notification", (req, res) => {
         });
     }
 
-    // Validate signature - Disabled for testing purposes
     if (!validateSignature(req.body, order.machineId)) {
         console.log("Invalid signature for notification:", req.body.referenceId);
         return res.status(400).json({
@@ -483,7 +482,7 @@ app.post("/online/notification", (req, res) => {
         });
     }
 
-    if (!order.isDelivering) {
+    if (!order.isDelivering && req.body.status == "00") {
         // Start delivery process if not already started
         deliverProducts(req.body.referenceId);
     }
@@ -515,8 +514,6 @@ app.get("/argo", (req, res) => {
 
     let url = URLS[isTesting]["eshop2ARgo"]; // ARgo URL
 
-    console.log(url)
-
     // Create order object and add to activeOrders
     const order = {
         referenceId: referenceId,
@@ -547,6 +544,8 @@ app.get("/argo", (req, res) => {
 
     const queryString = qs.stringify(body);
     const paymentURL = url + "?" + queryString;
+    
+    console.log("Payment URL: ", paymentURL);
 
     return res.redirect(paymentURL);
 });
@@ -590,7 +589,7 @@ app.post("/argo/notification", (req, res) => {
         });
     }
 
-    if (!order.isDelivering) {
+    if (!order.isDelivering && req.body.statusCode == "00") {
         deliverProducts(req.body.referenceId);
     }
 
@@ -628,10 +627,6 @@ app.get("/version", (req, res) => {
     });
 });
 
-app.all("*", (req, res) => {
-    console.log("Reach Here")
-    return res.status(200).json({ success: true, message: "RECEIVEDOK" });
-});
 
 /*
 ================
@@ -683,7 +678,7 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-    console.log("Hash String", hashString)
+    
     return crypto
         .createHmac("sha256", key || "abc")
         .update(hashString, "utf8")
@@ -694,7 +689,7 @@ function generateHash(data, key) {
 function validateSignature(data, machineId) {
     const signature = data.signature;
     const expectedHash = generateHash(data, getKey(machineId));
-    console.log("Expected Hash", expectedHash);
+    
     return signature === expectedHash;
 }
 
