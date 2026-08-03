@@ -892,7 +892,7 @@ async function deliverProducts(referenceId) {
 
     if (order.machineId === "eshop2testjp" && jpFailDeliStatus.amount > 0) {
         try {
-            const url = URLS[order.platform] + "/dstatus/";
+            const url = "https://argo.arvending.com.my/eshop2/app/dstatus/";
             const hash = generateHash(jpFailDeliStatus, getKey(order.machineId));
             jpFailDeliStatus["signature"] = hash;
             console.log("JP Refund Request Body: ", jpFailDeliStatus);
