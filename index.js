@@ -256,8 +256,6 @@ Notification Endpoint
 =====================
 */
 app.post("/offline/notification", (req, res) => {
-    console.log(req.body)
-    return res.status(200).send({msg: "RECEIVEDOK", payload: req.body})
 
     const order = getOrderFromJson(req.body.referenceId);
 
