@@ -833,12 +833,19 @@ async function deliverProducts(referenceId) {
                     }
 
                     console.log("Dstatus Request Body: ", requestBody);
+                    
+                    let response;
+                    try {
+                        response = await axios.post(url, qs.stringify(requestBody), {
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        });
+                    } catch (e) {
+                        console.log(`Skipping: Error on sending delivery status: ${e.message}, ${JSON.stringify(e.response.data)}`)
+                        continue;
+                    }
 
-                    const response = await axios.post(url, qs.stringify(requestBody), {
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
-                    });
                     const data = response.data;
                     console.log("ASDWAS")
 
@@ -881,7 +888,7 @@ async function deliverProducts(referenceId) {
                 });
 
             } catch (e) {
-                console.log("ERROR on refund request", e.response ? e.response.data : e.message);
+                console.log("ERROR on delivery process", e.response ? e.response.data : e.message);
             }
 
             const timeoutDuration = Math.floor(Math.random() * 10) + 5; // Random delay between 5 to 15 seconds
