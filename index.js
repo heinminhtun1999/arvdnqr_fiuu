@@ -544,7 +544,7 @@ app.get("/argo", (req, res) => {
 
     const queryString = qs.stringify(body);
     const paymentURL = url + "?" + queryString;
-    
+
     console.log("Payment URL: ", paymentURL);
 
     return res.redirect(paymentURL);
@@ -678,7 +678,7 @@ function generateHash(data, key) {
     for (const key in dataCopy) {
         hashString += dataCopy[key];
     }
-    
+
     return crypto
         .createHmac("sha256", key || "abc")
         .update(hashString, "utf8")
@@ -689,7 +689,7 @@ function generateHash(data, key) {
 function validateSignature(data, machineId) {
     const signature = data.signature;
     const expectedHash = generateHash(data, getKey(machineId));
-    
+
     return signature === expectedHash;
 }
 
@@ -824,7 +824,7 @@ async function deliverProducts(referenceId) {
 
                     const hash = generateHash(requestBody, getKey(order.machineId));
                     requestBody["signature"] = hash;
-                    
+
                     let url;
                     if (order.platform == 'eshop2ARgo') {
                         url = "https://argo.arvending.com.my/eshop2/app/dstatus/";
@@ -841,6 +841,9 @@ async function deliverProducts(referenceId) {
                     });
                     const data = response.data;
 
+                    // Log response for debugging
+                    console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
+
                     if (!success && data.data) {
 
                         // Validate signature
@@ -856,8 +859,6 @@ async function deliverProducts(referenceId) {
                         }
                     }
 
-                    // Log response for debugging
-                    console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
                 } else {
                     if (!success) {
                         jpFailDeliStatus.amount += item.price;
