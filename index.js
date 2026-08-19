@@ -840,6 +840,7 @@ async function deliverProducts(referenceId) {
                         }
                     });
                     const data = response.data;
+                    console.log("ASDWAS")
 
                     // Log response for debugging
                     console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
