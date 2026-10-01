@@ -40,6 +40,7 @@
 
         <form action="/cancel" method="POST" class="mt-6">
           <input type="hidden" name="orderData" value="<%= JSON.stringify(data) %>" />
+          <input type="hidden" name="isTesting" value="<%= isTesting %>" />
           <button
             type="submit"
             class="w-full rounded-full bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"

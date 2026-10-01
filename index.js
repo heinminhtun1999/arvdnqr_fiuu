@@ -173,7 +173,7 @@ app.post("/offline", async (req, res) => {
 
             // Start timeout check (3 minutes)
             checkTimeout(180, referenceId);
-            return res.render("payment", { data: data.response });
+            return res.render("payment", { data: data.response, isTesting });
         } else {
             return res.send("Error creating order");
         }
@@ -190,7 +190,7 @@ Cancel Order
 ============
 */
 app.post("/cancel", async (req, res) => {
-    const { orderData } = req.body;
+    const { orderData, isTesting } = req.body;
     const order = JSON.parse(orderData);
 
     const existingOrder = getOrderFromJson(order.referenceId);
@@ -246,8 +246,8 @@ app.post("/cancel", async (req, res) => {
         console.log("ERROR", e);
         return res.status(500).json(e);
     }
-
-    return res.redirect("/");
+    const route = isTesting === 'true' ? "/testing" : "/"
+    return res.redirect(route);
 });
 
 /*
@@ -562,6 +562,7 @@ app.post("/argo/notification", (req, res) => {
     const order = getOrderFromJson(referenceid);
     // console.log("Notification", order, referenceid)
     console.log("Callback Request Body", req.body)
+
     if (!order) {
         console.log("Order not found for notification:", req.body.referenceId);
         return res.status(200).json({
@@ -833,7 +834,7 @@ async function deliverProducts(referenceId) {
                     }
 
                     console.log("Dstatus Request Body: ", requestBody);
-                    
+
                     let response;
                     try {
                         response = await axios.post(url, qs.stringify(requestBody), {
@@ -847,7 +848,6 @@ async function deliverProducts(referenceId) {
                     }
 
                     const data = response.data;
-                    console.log("ASDWAS")
 
                     // Log response for debugging
                     console.log(`Item ${order.totalQuantity - itemLeft} \ndelivery response:`, data, "\n========================");
